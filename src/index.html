@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rumbla — Conquer your city.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ─────────────────────────────────────────
+   CONFIG — change MODE to switch versions
+   OPTIONS: 'waitlist' | 'launch'
+───────────────────────────────────────── */
+:root {
+  --mode: 'waitlist'; /* unused in CSS, used in JS below */
+
+  /* Dark mode tokens */
+  --bg-base:     #0D0F14;
+  --bg-surface:  #141720;
+  --bg-elevated: #1C2030;
+  --bg-overlay:  #252A3A;
+  --text-pri:    #F0F2F8;
+  --text-sec:    #8B93A8;
+  --text-dis:    #4A5168;
+  --accent:      #FF5C35;
+  --accent-dim:  rgba(255,92,53,0.12);
+  --teal:        #00E5CC;
+  --blue:        #4D8EFF;
+  --border-sub:  #1F2435;
+  --border-str:  #2D3350;
+}
+
+[data-theme="light"] {
+  --bg-base:     #F4F5F7;
+  --bg-surface:  #FFFFFF;
+  --bg-elevated: #ECEEF2;
+  --bg-overlay:  #E2E5EB;
+  --text-pri:    #0D0F14;
+  --text-sec:    #4A5168;
+  --text-dis:    #8B93A8;
+  --accent:      #FF4D1F;
+  --accent-dim:  rgba(255,77,31,0.08);
+  --teal:        #00CCBA;
+  --blue:        #3D7FFF;
+  --border-sub:  #DDE0E8;
+  --border-str:  #B8BECE;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-base);
+  color: var(--text-pri);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-sub);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-sec);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--text-pri); }
+.theme-toggle .icon { font-size: 14px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  padding: 20px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 100%);
+}
+
+.logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 28px;
+  letter-spacing: -0.5px;
+  color: var(--text-pri);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.logo-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-top: -10px;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 120px 48px 80px;
+  gap: 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Hexagon grid background */
+.hex-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+}
+[data-theme="light"] .hex-grid { opacity: 0.04; }
+
+.hex-grid svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Glow blob */
+.glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  right: -100px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: radial-gradient(circle, rgba(255,92,53,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+[data-theme="light"] .glow { background: radial-gradient(circle, rgba(255,77,31,0.08) 0%, transparent 70%); }
+
+/* ── HERO LEFT ── */
+.hero-left {
+  position: relative;
+  z-index: 2;
+  animation: fadeUp 0.8s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(255,92,53,0.2);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.hero-eyebrow .pulse {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.8); }
+}
+
+h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(56px, 7vw, 88px);
+  line-height: 0.95;
+  letter-spacing: -1px;
+  color: var(--text-pri);
+  margin-bottom: 24px;
+}
+
+h1 .accent { color: var(--accent); }
+h1 .line-2 { display: block; }
+
+.hero-sub {
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--text-sec);
+  line-height: 1.6;
+  max-width: 440px;
+  margin-bottom: 40px;
+}
+
+/* ── WAITLIST FORM ── */
+.waitlist-form {
+  display: flex;
+  gap: 12px;
+  max-width: 440px;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+.waitlist-form input {
+  flex: 1;
+  height: 52px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-str);
+  border-radius: 12px;
+  padding: 0 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--text-pri);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.waitlist-form input::placeholder { color: var(--text-dis); }
+.waitlist-form input:focus { border-color: var(--accent); }
+
+.btn-primary {
+  height: 52px;
+  padding: 0 28px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+
+.waitlist-note {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-dis);
+}
+.waitlist-note strong { color: var(--teal); }
+
+/* ── SUCCESS STATE ── */
+.success-state {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0,229,204,0.08);
+  border: 1px solid rgba(0,229,204,0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  max-width: 440px;
+  animation: fadeUp 0.4s ease both;
+}
+.success-state.show { display: flex; }
+.success-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--teal);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.success-state p { font-size: 14px; color: var(--text-sec); }
+.success-state strong { color: var(--teal); }
+
+/* ── LAUNCH CTA ── */
+.launch-cta {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+.launch-cta.show { display: flex; }
+
+.btn-appstore {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--text-pri);
+  color: var(--bg-base);
+  border: none;
+  border-radius: 14px;
+  padding: 14px 24px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  text-decoration: none;
+  width: fit-content;
+  transition: all 0.2s;
+}
+.btn-appstore:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+.btn-appstore .store-icon { font-size: 28px; }
+.btn-appstore .store-text { display: flex; flex-direction: column; }
+.btn-appstore .store-sub { font-size: 10px; font-weight: 400; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
+.btn-appstore .store-name { font-size: 18px; font-weight: 700; line-height: 1.2; }
+
+.launch-note { font-size: 13px; color: var(--text-dis); }
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: flex;
+  gap: 32px;
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border-sub);
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+.stat { display: flex; flex-direction: column; gap: 4px; }
+.stat-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--text-pri);
+}
+.stat-num span { color: var(--accent); }
+.stat-label { font-size: 12px; color: var(--text-dis); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ── HERO RIGHT — Phone mockup ── */
+.hero-right {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  animation: fadeUp 0.8s 0.1s ease both;
+}
+
+.phone-container {
+  position: relative;
+  width: 280px;
+}
+
+.phone-mockup {
+  width: 280px;
+  height: 580px;
+  background: var(--bg-base);
+  border-radius: 40px;
+  border: 1.5px solid var(--border-str);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px var(--border-sub);
+}
+[data-theme="light"] .phone-mockup {
+  box-shadow: 0 40px 80px rgba(0,0,0,0.15), 0 0 0 1px var(--border-sub);
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Map inside phone */
+.phone-map {
+  position: absolute;
+  inset: 0;
+  background: #0D0F14;
+}
+
+/* Hex canvas in phone */
+#phoneCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.phone-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 280px;
+  background: linear-gradient(to top, var(--bg-base) 40%, transparent);
+}
+
+.phone-content {
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  right: 0;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.phone-logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 26px;
+  color: var(--text-pri);
+  margin-bottom: 4px;
+}
+.phone-tagline {
+  font-size: 12px;
+  color: var(--text-sec);
+  margin-bottom: 20px;
+}
+.phone-btn {
+  width: 100%;
+  height: 44px;
+  background: var(--accent);
+  border: none;
+  border-radius: 22px;
+  color: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Floating badges on phone */
+.badge {
+  position: absolute;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-sub);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-pri);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  animation: floatBadge 3s ease-in-out infinite;
+  white-space: nowrap;
+}
+[data-theme="light"] .badge { box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+
+.badge-1 {
+  right: -40px;
+  top: 100px;
+  animation-delay: 0s;
+}
+.badge-2 {
+  left: -50px;
+  top: 220px;
+  animation-delay: 1s;
+}
+.badge-3 {
+  right: -30px;
+  bottom: 160px;
+  animation-delay: 2s;
+}
+
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* ── FEATURES SECTION ── */
+.features {
+  padding: 120px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.05;
+  color: var(--text-pri);
+  margin-bottom: 64px;
+  max-width: 600px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.feature-card {
+  background: var(--bg-surface);
+  padding: 40px 32px;
+  border: 1px solid var(--border-sub);
+  transition: background 0.2s, border-color 0.2s;
+  animation: fadeUp 0.6s ease both;
+}
+.feature-card:hover { background: var(--bg-elevated); border-color: var(--border-str); }
+.feature-card:nth-child(1) { border-radius: 16px 0 0 0; }
+.feature-card:nth-child(2) { border-radius: 0; }
+.feature-card:nth-child(3) { border-radius: 0 16px 0 0; }
+.feature-card:nth-child(4) { border-radius: 0 0 0 16px; }
+.feature-card:nth-child(5) { border-radius: 0; }
+.feature-card:nth-child(6) { border-radius: 0 0 16px 0; }
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(255,92,53,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.feature-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--text-pri);
+  margin-bottom: 10px;
+}
+
+.feature-desc {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-sec);
+  line-height: 1.6;
+}
+
+/* ── HOW IT WORKS ── */
+.how-it-works {
+  padding: 80px 48px 120px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.viral-loop {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-sub);
+  border-radius: 24px;
+  padding: 56px;
+  position: relative;
+  overflow: hidden;
+}
+
+.viral-loop::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,92,53,0.06) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.loop-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.loop-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 0 24px;
+}
+
+.loop-step-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-str);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.loop-step-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-sec);
+  max-width: 100px;
+}
+
+.loop-arrow {
+  color: var(--accent);
+  font-size: 18px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+/* ── BOTTOM CTA ── */
+.bottom-cta {
+  padding: 80px 48px 120px;
+  text-align: center;
+}
+
+.bottom-cta h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(48px, 6vw, 80px);
+  line-height: 0.95;
+  color: var(--text-pri);
+  margin-bottom: 16px;
+}
+.bottom-cta h2 .accent { color: var(--accent); }
+
+.bottom-cta p {
+  font-size: 16px;
+  color: var(--text-sec);
+  margin-bottom: 40px;
+}
+
+/* Bottom waitlist */
+.bottom-waitlist {
+  display: flex;
+  gap: 12px;
+  max-width: 400px;
+  margin: 0 auto;
+  justify-content: center;
+}
+.bottom-waitlist input {
+  flex: 1;
+  height: 52px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-str);
+  border-radius: 12px;
+  padding: 0 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--text-pri);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.bottom-waitlist input::placeholder { color: var(--text-dis); }
+.bottom-waitlist input:focus { border-color: var(--accent); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border-sub);
+  padding: 32px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+footer .logo { font-size: 20px; }
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+.footer-links a {
+  font-size: 13px;
+  color: var(--text-dis);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--text-sec); }
+
+.footer-copy {
+  font-size: 12px;
+  color: var(--text-dis);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 120px 24px 80px;
+    gap: 48px;
+  }
+  .hero-right { display: none; }
+  nav { padding: 20px 24px; }
+  .theme-toggle { top: 16px; right: 16px; }
+  .features { padding: 80px 24px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .feature-card { border-radius: 0 !important; }
+  .feature-card:first-child { border-radius: 16px 16px 0 0 !important; }
+  .feature-card:last-child { border-radius: 0 0 16px 16px !important; }
+  .how-it-works { padding: 40px 24px 80px; }
+  .viral-loop { padding: 32px 24px; }
+  .loop-steps { gap: 16px; }
+  .loop-arrow { display: none; }
+  .bottom-cta { padding: 60px 24px 80px; }
+  .bottom-waitlist { flex-direction: column; }
+  footer { padding: 24px; flex-direction: column; gap: 16px; text-align: center; }
+  .waitlist-form { flex-direction: column; }
+  .stats-row { gap: 24px; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- THEME TOGGLE -->
+<button class="theme-toggle" onclick="toggleTheme()">
+  <span class="icon" id="themeIcon">☀️</span>
+  <span id="themeLabel">Light mode</span>
+</button>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">
+    rumbla<span class="logo-dot"></span>
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <!-- Hex grid SVG background -->
+    <div class="hex-grid">
+      <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="hexPattern" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+            <polygon points="30,2 58,17 58,35 30,50 2,35 2,17" fill="none" stroke="#FF5C35" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#hexPattern)"/>
+      </svg>
+    </div>
+    <div class="glow"></div>
+  </div>
+
+  <!-- LEFT -->
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <span class="pulse"></span>
+      <span id="eyebrowText">Copenhagen · Now accepting signups</span>
+    </div>
+
+    <h1>
+      Conquer<br>
+      <span class="accent">every</span><br>
+      <span class="line-2">street.</span>
+    </h1>
+
+    <p class="hero-sub">
+      Turn your daily run into a battle. Conquer city blocks as hexagons, steal zones from friends, and dominate the leaderboard.
+    </p>
+
+    <!-- WAITLIST MODE -->
+    <div id="waitlistSection">
+      <form class="waitlist-form" onsubmit="handleWaitlist(event)">
+        <input type="email" id="emailInput" placeholder="your@email.com" required>
+        <button type="submit" class="btn-primary">Join waitlist</button>
+      </form>
+      <p class="waitlist-note" id="waitlistCount">
+        <strong>247 runners</strong> already on the waitlist in Copenhagen.
+      </p>
+    </div>
+
+    <div class="success-state" id="successState">
+      <div class="success-icon">✓</div>
+      <div>
+        <p><strong>You're on the list.</strong></p>
+        <p>We'll notify you when Rumbla launches in Copenhagen.</p>
+      </div>
+    </div>
+
+    <!-- LAUNCH MODE -->
+    <div class="launch-cta" id="launchSection">
+      <a href="#" class="btn-appstore">
+        <span class="store-icon">🍎</span>
+        <span class="store-text">
+          <span class="store-sub">Download on the</span>
+          <span class="store-name">App Store</span>
+        </span>
+      </a>
+      <p class="launch-note">Free · iOS · Copenhagen</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat">
+        <span class="stat-num" id="statHex">50<span>m</span></span>
+        <span class="stat-label">hex radius</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">1<span style="color:var(--text-sec);font-size:20px">st</span></span>
+        <span class="stat-label">Nordic app</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">0<span style="color:var(--text-sec);font-size:20px">ads</span></span>
+        <span class="stat-label">ever, forever</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT — Phone mockup -->
+  <div class="hero-right">
+    <div class="phone-container">
+      <!-- Floating badges -->
+      <div class="badge badge-1">
+        <span class="badge-dot" style="background:#FF3B3B"></span>
+        Mads stole 5 zones
+      </div>
+      <div class="badge badge-2">
+        <span class="badge-dot" style="background:#2ECC71"></span>
+        +12 zones this run
+      </div>
+      <div class="badge badge-3">
+        <span class="badge-dot" style="background:#FFB830"></span>
+        🔥 Day 13 streak
+      </div>
+
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="phone-map">
+            <canvas id="phoneCanvas"></canvas>
+          </div>
+          <div class="phone-overlay"></div>
+          <div class="phone-content">
+            <div class="phone-logo">rumbla</div>
+            <div class="phone-tagline">Conquer your city.</div>
+            <button class="phone-btn">Get started</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="section-label">Why Rumbla</div>
+  <h2 class="section-title">Running, but now it's a war.</h2>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🗺️</div>
+      <div class="feature-title">Territory conquest</div>
+      <div class="feature-desc">Every meter you run paints the map. Hexagons stay yours until someone takes them back.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚔️</div>
+      <div class="feature-title">Zone theft</div>
+      <div class="feature-desc">Run over a friend's hexagon and steal it. They'll get a notification. They'll run to take it back.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <div class="feature-title">Live rankings</div>
+      <div class="feature-desc">Weekly and all-time leaderboards. Your rank always visible. Three zones from #4 — you know what to do.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <div class="feature-title">Share your map</div>
+      <div class="feature-desc">Post your territory snapshot to Stories. Your conquered map is the flex. Deep link drives installs.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <div class="feature-title">Social feed</div>
+      <div class="feature-desc">Friends feed for rivalry, global feed for discovery. Open the app on rest days just to check the map.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔥</div>
+      <div class="feature-title">Streak system</div>
+      <div class="feature-desc">Daily streak keeps you coming back. Miss a day and watch your status slip. Miss two and your friends won't let you forget.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works">
+  <div class="section-label">The loop</div>
+  <h2 class="section-title">Designed to be impossible to stop.</h2>
+
+  <div class="viral-loop">
+    <div class="loop-steps">
+      <div class="loop-step">
+        <div class="loop-step-icon">🏃</div>
+        <div class="loop-step-label">You run</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step">
+        <div class="loop-step-icon">🟠</div>
+        <div class="loop-step-label">Conquer hexagons</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step">
+        <div class="loop-step-icon">📸</div>
+        <div class="loop-step-label">Share map on Stories</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step">
+        <div class="loop-step-icon">👀</div>
+        <div class="loop-step-label">Friend sees it</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step">
+        <div class="loop-step-icon">📲</div>
+        <div class="loop-step-label">Downloads Rumbla</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step">
+        <div class="loop-step-icon">😤</div>
+        <div class="loop-step-label">Steals your zones</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step">
+        <div class="loop-step-icon">🔔</div>
+        <div class="loop-step-label">You get notified</div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step">
+        <div class="loop-step-icon" style="background:var(--accent-dim);border-color:rgba(255,92,53,0.3)">🏃</div>
+        <div class="loop-step-label" style="color:var(--accent)">You run again</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="bottom-cta">
+  <h2>Copenhagen<br>is <span class="accent">waiting.</span></h2>
+  <p id="bottomSubtext">Be among the first runners to claim your territory.</p>
+
+  <!-- Waitlist bottom -->
+  <div id="bottomWaitlist">
+    <form class="bottom-waitlist" onsubmit="handleBottomWaitlist(event)">
+      <input type="email" id="bottomEmail" placeholder="your@email.com" required>
+      <button type="submit" class="btn-primary">Join waitlist</button>
+    </form>
+  </div>
+
+  <!-- Launch bottom -->
+  <div id="bottomLaunch" style="display:none">
+    <a href="#" class="btn-appstore" style="margin:0 auto">
+      <span class="store-icon">🍎</span>
+      <span class="store-text">
+        <span class="store-sub">Download on the</span>
+        <span class="store-name">App Store</span>
+      </span>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="logo">rumbla<span class="logo-dot"></span></a>
+  <ul class="footer-links">
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Terms</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <span class="footer-copy">© 2025 Rumbla · Copenhagen, Denmark</span>
+</footer>
+
+<script>
+
+// ─────────────────────────────────────────
+// CONFIGURATION — change this to switch modes
+// 'waitlist' = pre-launch signup form
+// 'launch'   = App Store download button
+const MODE = 'waitlist';
+// ─────────────────────────────────────────
+
+// Apply mode on load
+(function applyMode() {
+  if (MODE === 'launch') {
+    document.getElementById('waitlistSection').style.display = 'none';
+    document.getElementById('launchSection').classList.add('show');
+    document.getElementById('eyebrowText').textContent = 'Now available on iOS';
+    document.getElementById('bottomWaitlist').style.display = 'none';
+    document.getElementById('bottomLaunch').style.display = 'block';
+    document.getElementById('bottomSubtext').textContent = 'Free to download. Start conquering today.';
+  }
+})();
+
+// ── THEME TOGGLE ──
+let isDark = true;
+
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'light');
+  document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+  document.getElementById('themeLabel').textContent = isDark ? 'Light mode' : 'Dark mode';
+  drawHexagons(); // redraw with new colors
+}
+
+// ── WAITLIST FORM ──
+let waitlistCount = 247;
+
+function handleWaitlist(e) {
+  e.preventDefault();
+  const email = document.getElementById('emailInput').value;
+  if (!email) return;
+  waitlistCount++;
+  document.getElementById('waitlistSection').style.display = 'none';
+  document.getElementById('successState').classList.add('show');
+  console.log('Waitlist signup:', email);
+  // TODO: connect to your backend / Supabase / Mailchimp
+}
+
+function handleBottomWaitlist(e) {
+  e.preventDefault();
+  const email = document.getElementById('bottomEmail').value;
+  if (!email) return;
+  document.getElementById('bottomWaitlist').innerHTML =
+    '<p style="color:var(--teal);font-size:15px">✓ You\'re on the list. We\'ll be in touch.</p>';
+  console.log('Bottom waitlist signup:', email);
+}
+
+// ── HEX CANVAS ANIMATION ──
+const canvas = document.getElementById('phoneCanvas');
+const ctx = canvas.getContext('2d');
+
+const hexes = [];
+const HEX_SIZE = 22;
+const COLS = 8;
+const ROWS = 14;
+
+function hexToPixel(col, row) {
+  const x = col * HEX_SIZE * 1.75;
+  const y = row * HEX_SIZE * 1.52 + (col % 2 === 0 ? 0 : HEX_SIZE * 0.76);
+  return { x: x + 20, y: y + 10 };
+}
+
+function drawHex(x, y, size, color, alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const angle = Math.PI / 180 * (60 * i - 30);
+    const px = x + size * Math.cos(angle);
+    const py = y + size * Math.sin(angle);
+    if (i === 0) ctx.moveTo(px, py);
+    else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.restore();
+}
+
+// Init hexes
+for (let col = 0; col < COLS; col++) {
+  for (let row = 0; row < ROWS; row++) {
+    const { x, y } = hexToPixel(col, row);
+    const rand = Math.random();
+    let type = 'neutral';
+    if (rand < 0.25) type = 'own';
+    else if (rand < 0.38) type = 'friend';
+    hexes.push({
+      x, y,
+      type,
+      alpha: 0.1 + Math.random() * 0.4,
+      targetAlpha: 0,
+      pulseSpeed: 0.005 + Math.random() * 0.01,
+      pulseOffset: Math.random() * Math.PI * 2,
+    });
+  }
+}
+
+let frame = 0;
+
+function drawHexagons() {
+  if (!canvas.parentElement) return;
+  canvas.width = canvas.offsetWidth || 280;
+  canvas.height = canvas.offsetHeight || 580;
+
+  const darkMode = !document.documentElement.hasAttribute('data-theme') ||
+                    document.documentElement.getAttribute('data-theme') !== 'light';
+
+  const colors = {
+    own:     darkMode ? '#FF5C35' : '#FF4D1F',
+    friend:  darkMode ? '#4D8EFF' : '#3D7FFF',
+    neutral: darkMode ? '#252A3A' : '#D0D4DE',
+  };
+
+  const bgColor = darkMode ? '#0D0F14' : '#E8ECF0';
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  frame++;
+
+  hexes.forEach(function(hex) {
+    const pulse = Math.sin(frame * hex.pulseSpeed + hex.pulseOffset) * 0.15 + 0.15;
+    const a = hex.type === 'neutral' ? 0.15 + pulse * 0.3 : 0.5 + pulse;
+    drawHex(hex.x, hex.y, HEX_SIZE - 2, colors[hex.type], Math.min(a, 1));
+  });
+}
+
+function animate() {
+  drawHexagons();
+  requestAnimationFrame(animate);
+}
+
+// Wait for layout
+setTimeout(function() {
+  canvas.width = canvas.offsetWidth || 280;
+  canvas.height = canvas.offsetHeight || 580;
+  animate();
+}, 100);
+
+window.addEventListener('resize', function() {
+  canvas.width = canvas.offsetWidth || 280;
+  canvas.height = canvas.offsetHeight || 580;
+});
+
+</script>
+</body>
+</html>
