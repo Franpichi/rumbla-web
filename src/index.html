@@ -772,7 +772,7 @@ footer {
 <nav>
   <!-- LOGO: text fallback — replace with <img class="logo-img" src="assets/logo.svg" alt="Rumbla"> when ready -->
   <a href="#" class="logo-wrap">
-<img src="../assets/logo-dark.svg" alt="Rumbla" class="logo-img" id="logoImg">
+<img src="assets/logo-dark.svg" alt="Rumbla" class="logo-img" id="logoImg">
   </a>
 </nav>
 
@@ -1200,7 +1200,7 @@ function toggleTheme() {
   document.getElementById('themeIcon').textContent  = isDark ? '☀️' : '🌙';
   document.getElementById('themeLabel').textContent = isDark ? 'Light' : 'Dark';
   document.querySelectorAll('#logoImg').forEach(el => {
-  el.src = isDark ? '../assets/logo-dark.svg' : '../assets/logo-light.svg';
+  el.src = isDark ? 'assets/logo-dark.svg' : 'assets/logo-light.svg';
 });
 }
 
