@@ -6,17 +6,13 @@
 <title>Rumbla — Conquer your city.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
 
 /* ─────────────────────────────────────────
-   CONFIG — change MODE to switch versions
-   OPTIONS: 'waitlist' | 'launch'
+   MODE: 'waitlist' | 'launch'
 ───────────────────────────────────────── */
 :root {
-  --mode: 'waitlist'; /* unused in CSS, used in JS below */
-
-  /* Dark mode tokens */
   --bg-base:     #0D0F14;
   --bg-surface:  #141720;
   --bg-elevated: #1C2030;
@@ -26,30 +22,34 @@
   --text-dis:    #4A5168;
   --accent:      #FF5C35;
   --accent-dim:  rgba(255,92,53,0.12);
+  --accent-glow: rgba(255,92,53,0.25);
   --teal:        #00E5CC;
+  --teal-dim:    rgba(0,229,204,0.1);
   --blue:        #4D8EFF;
   --border-sub:  #1F2435;
   --border-str:  #2D3350;
+  --radius-card: 16px;
 }
 
 [data-theme="light"] {
-  --bg-base:     #F4F5F7;
+  --bg-base:     #F2F3F7;
   --bg-surface:  #FFFFFF;
-  --bg-elevated: #ECEEF2;
-  --bg-overlay:  #E2E5EB;
+  --bg-elevated: #ECEEF4;
+  --bg-overlay:  #E2E5ED;
   --text-pri:    #0D0F14;
   --text-sec:    #4A5168;
   --text-dis:    #8B93A8;
   --accent:      #FF4D1F;
   --accent-dim:  rgba(255,77,31,0.08);
+  --accent-glow: rgba(255,77,31,0.15);
   --teal:        #00CCBA;
+  --teal-dim:    rgba(0,204,186,0.08);
   --blue:        #3D7FFF;
-  --border-sub:  #DDE0E8;
-  --border-str:  #B8BECE;
+  --border-sub:  #DDE0EA;
+  --border-str:  #C2C8D8;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 html { scroll-behavior: smooth; }
 
 body {
@@ -58,62 +58,84 @@ body {
   color: var(--text-pri);
   min-height: 100vh;
   overflow-x: hidden;
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.35s, color 0.35s;
 }
 
-/* ── THEME TOGGLE ── */
-.theme-toggle {
+/* ── CONTROLS BAR (top-right) ── */
+.controls {
   position: fixed;
-  top: 24px;
-  right: 24px;
-  z-index: 100;
+  top: 20px;
+  right: 20px;
+  z-index: 200;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ctrl-btn {
   background: var(--bg-elevated);
-  border: 1px solid var(--border-sub);
+  border: 1px solid var(--border-str);
   border-radius: 999px;
   padding: 8px 16px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-sec);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   transition: all 0.2s;
+  letter-spacing: 0.2px;
 }
-.theme-toggle:hover { border-color: var(--accent); color: var(--text-pri); }
-.theme-toggle .icon { font-size: 14px; }
+.ctrl-btn:hover { border-color: var(--accent); color: var(--text-pri); }
+.ctrl-btn .flag { font-size: 14px; line-height: 1; }
 
 /* ── NAV ── */
 nav {
   position: fixed;
   top: 0; left: 0; right: 0;
-  z-index: 50;
-  padding: 20px 48px;
+  z-index: 100;
+  padding: 22px 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 100%);
 }
 
-.logo {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: 28px;
-  letter-spacing: -0.5px;
-  color: var(--text-pri);
-  text-decoration: none;
+/* LOGO — replace inner content with <img> once assets are exported */
+.logo-wrap {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0;
+  text-decoration: none;
+}
+
+/* Text fallback logo — delete this block when real logo SVG/PNG is ready */
+.logo-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 30px;
+  letter-spacing: -0.5px;
+  color: var(--text-pri);
+  line-height: 1;
 }
 .logo-dot {
   width: 8px;
   height: 8px;
   background: var(--accent);
   border-radius: 50%;
-  margin-top: -10px;
+  margin-left: 2px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
 }
+/* ── When logo image is ready, use this instead: ──
+.logo-img {
+  height: 32px;
+  width: auto;
+}
+[data-theme="light"] .logo-img { filter: invert(1); }  ← adjust if needed
+*/
 
 /* ── HERO ── */
 .hero {
@@ -121,59 +143,60 @@ nav {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  padding: 120px 48px 80px;
-  gap: 64px;
+  padding: 120px 52px 80px;
+  gap: 56px;
   position: relative;
   overflow: hidden;
 }
 
+/* Hex grid background */
 .hero-bg {
   position: absolute;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
 }
-
-/* Hexagon grid background */
 .hex-grid {
   position: absolute;
   inset: 0;
-  opacity: 0.06;
+  opacity: 0.055;
 }
-[data-theme="light"] .hex-grid { opacity: 0.04; }
+[data-theme="light"] .hex-grid { opacity: 0.035; }
+.hex-grid svg { width: 100%; height: 100%; }
 
-.hex-grid svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Glow blob */
-.glow {
+/* Accent glow */
+.glow-orb {
   position: absolute;
-  width: 600px;
-  height: 600px;
-  right: -100px;
+  width: 700px;
+  height: 700px;
+  right: -80px;
   top: 50%;
   transform: translateY(-50%);
-  background: radial-gradient(circle, rgba(255,92,53,0.15) 0%, transparent 70%);
+  background: radial-gradient(circle at 50% 50%,
+    var(--accent-glow) 0%,
+    rgba(77,142,255,0.06) 40%,
+    transparent 70%);
   border-radius: 50%;
-  pointer-events: none;
+  animation: breathe 6s ease-in-out infinite;
 }
-[data-theme="light"] .glow { background: radial-gradient(circle, rgba(255,77,31,0.08) 0%, transparent 70%); }
+@keyframes breathe {
+  0%,100% { transform: translateY(-50%) scale(1); opacity: 1; }
+  50%      { transform: translateY(-52%) scale(1.05); opacity: 0.8; }
+}
 
 /* ── HERO LEFT ── */
 .hero-left {
   position: relative;
   z-index: 2;
-  animation: fadeUp 0.8s ease both;
+  animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) both;
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.hero-eyebrow {
+.eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -181,626 +204,627 @@ nav {
   border: 1px solid rgba(255,92,53,0.2);
   border-radius: 999px;
   padding: 6px 14px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   color: var(--accent);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
-.hero-eyebrow .pulse {
-  width: 6px;
-  height: 6px;
+.pulse {
+  width: 6px; height: 6px;
   background: var(--accent);
   border-radius: 50%;
-  animation: pulse 2s infinite;
+  animation: blink 2s infinite;
+  flex-shrink: 0;
 }
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.4; transform: scale(0.8); }
+@keyframes blink {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.3; transform: scale(0.7); }
 }
 
 h1 {
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 900;
-  font-size: clamp(56px, 7vw, 88px);
-  line-height: 0.95;
+  font-size: clamp(58px, 7.5vw, 96px);
+  line-height: 0.92;
   letter-spacing: -1px;
   color: var(--text-pri);
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+}
+h1 .acc { color: var(--accent); }
+h1 em {
+  font-style: italic;
+  color: var(--text-sec);
+  font-weight: 700;
 }
 
-h1 .accent { color: var(--accent); }
-h1 .line-2 { display: block; }
-
 .hero-sub {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 300;
   color: var(--text-sec);
-  line-height: 1.6;
-  max-width: 440px;
+  line-height: 1.65;
+  max-width: 430px;
   margin-bottom: 40px;
 }
 
-/* ── WAITLIST FORM ── */
+/* ── FORM ── */
+.form-wrap {
+  animation: fadeUp 0.9s 0.15s cubic-bezier(0.16,1,0.3,1) both;
+}
 .waitlist-form {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   max-width: 440px;
-  animation: fadeUp 0.8s 0.2s ease both;
 }
-
 .waitlist-form input {
   flex: 1;
-  height: 52px;
+  height: 54px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-str);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 0 20px;
   font-family: 'DM Sans', sans-serif;
   font-size: 15px;
   color: var(--text-pri);
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 .waitlist-form input::placeholder { color: var(--text-dis); }
-.waitlist-form input:focus { border-color: var(--accent); }
+.waitlist-form input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
 
 .btn-primary {
-  height: 52px;
+  height: 54px;
   padding: 0 28px;
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-family: 'DM Sans', sans-serif;
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.2s;
+  transition: filter 0.2s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
 }
-.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
-.btn-primary:active { transform: translateY(0); }
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+.btn-primary:hover  { filter: brightness(1.12); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); filter: brightness(0.95); }
 
 .waitlist-note {
-  margin-top: 16px;
+  margin-top: 14px;
   font-size: 13px;
   color: var(--text-dis);
 }
 .waitlist-note strong { color: var(--teal); }
 
-/* ── SUCCESS STATE ── */
+/* success */
 .success-state {
   display: none;
   align-items: center;
-  gap: 12px;
-  background: rgba(0,229,204,0.08);
+  gap: 14px;
+  background: var(--teal-dim);
   border: 1px solid rgba(0,229,204,0.2);
-  border-radius: 12px;
-  padding: 16px 20px;
+  border-radius: 14px;
+  padding: 18px 22px;
   max-width: 440px;
-  animation: fadeUp 0.4s ease both;
 }
-.success-state.show { display: flex; }
+.success-state.show { display: flex; animation: fadeUp 0.4s ease both; }
 .success-icon {
-  width: 32px;
-  height: 32px;
+  width: 34px; height: 34px;
   background: var(--teal);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0; color: #0D0F14;
 }
-.success-state p { font-size: 14px; color: var(--text-sec); }
+.success-state p { font-size: 14px; color: var(--text-sec); line-height: 1.5; }
 .success-state strong { color: var(--teal); }
 
-/* ── LAUNCH CTA ── */
-.launch-cta {
-  display: none;
-  flex-direction: column;
-  gap: 16px;
-  animation: fadeUp 0.8s 0.2s ease both;
-}
-.launch-cta.show { display: flex; }
-
+/* launch CTA */
+.launch-cta { display: none; flex-direction: column; gap: 14px; }
+.launch-cta.show { display: flex; animation: fadeUp 0.9s 0.15s both; }
 .btn-appstore {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  background: var(--text-pri);
-  color: var(--bg-base);
-  border: none;
-  border-radius: 14px;
-  padding: 14px 24px;
+  display: inline-flex; align-items: center; gap: 14px;
+  background: var(--text-pri); color: var(--bg-base);
+  border: none; border-radius: 16px; padding: 14px 26px;
   font-family: 'DM Sans', sans-serif;
-  cursor: pointer;
-  text-decoration: none;
-  width: fit-content;
-  transition: all 0.2s;
+  cursor: pointer; text-decoration: none; width: fit-content;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.btn-appstore:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-.btn-appstore .store-icon { font-size: 28px; }
-.btn-appstore .store-text { display: flex; flex-direction: column; }
-.btn-appstore .store-sub { font-size: 10px; font-weight: 400; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
-.btn-appstore .store-name { font-size: 18px; font-weight: 700; line-height: 1.2; }
-
+.btn-appstore:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,0,0,0.35); }
+.store-icon { font-size: 28px; }
+.store-sub  { font-size: 10px; font-weight: 400; opacity: 0.55; text-transform: uppercase; letter-spacing: 0.6px; }
+.store-name { font-size: 18px; font-weight: 700; line-height: 1.2; }
 .launch-note { font-size: 13px; color: var(--text-dis); }
 
-/* ── STATS ROW ── */
+/* ── STATS ── */
 .stats-row {
   display: flex;
-  gap: 32px;
-  margin-top: 40px;
-  padding-top: 32px;
+  gap: 36px;
+  margin-top: 44px;
+  padding-top: 36px;
   border-top: 1px solid var(--border-sub);
-  animation: fadeUp 0.8s 0.4s ease both;
+  animation: fadeUp 0.9s 0.3s cubic-bezier(0.16,1,0.3,1) both;
 }
-.stat { display: flex; flex-direction: column; gap: 4px; }
+.stat { display: flex; flex-direction: column; gap: 5px; }
 .stat-num {
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
-  font-size: 28px;
+  font-size: 30px;
   color: var(--text-pri);
+  letter-spacing: -0.5px;
 }
 .stat-num span { color: var(--accent); }
-.stat-label { font-size: 12px; color: var(--text-dis); text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-num sup  { font-size: 16px; color: var(--text-sec); font-weight: 700; vertical-align: super; }
+.stat-label    { font-size: 11px; color: var(--text-dis); text-transform: uppercase; letter-spacing: 0.8px; }
 
-/* ── HERO RIGHT — Phone mockup ── */
+/* ── HERO RIGHT — Phone ── */
 .hero-right {
   position: relative;
   z-index: 2;
   display: flex;
   justify-content: center;
-  animation: fadeUp 0.8s 0.1s ease both;
+  animation: fadeUp 0.9s 0.08s cubic-bezier(0.16,1,0.3,1) both;
 }
 
-.phone-container {
-  position: relative;
-  width: 280px;
-}
+.phone-container { position: relative; width: 288px; }
 
 .phone-mockup {
-  width: 280px;
-  height: 580px;
+  width: 288px;
+  height: 596px;
   background: var(--bg-base);
-  border-radius: 40px;
+  border-radius: 44px;
   border: 1.5px solid var(--border-str);
   overflow: hidden;
   position: relative;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px var(--border-sub);
+  box-shadow:
+    0 0 0 1px var(--border-sub),
+    0 40px 80px rgba(0,0,0,0.55),
+    0 80px 120px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.04);
 }
 [data-theme="light"] .phone-mockup {
-  box-shadow: 0 40px 80px rgba(0,0,0,0.15), 0 0 0 1px var(--border-sub);
+  box-shadow:
+    0 0 0 1px var(--border-sub),
+    0 40px 80px rgba(0,0,0,0.12),
+    0 80px 120px rgba(0,0,0,0.07);
 }
 
-.phone-screen {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Map inside phone */
-.phone-map {
+/* Notch */
+.phone-notch {
   position: absolute;
-  inset: 0;
-  background: #0D0F14;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 34px;
+  background: var(--bg-base);
+  border-radius: 0 0 22px 22px;
+  z-index: 10;
 }
+[data-theme="light"] .phone-notch { background: #F2F3F7; }
 
-/* Hex canvas in phone */
 #phoneCanvas {
   position: absolute;
+  inset: 0; width: 100%; height: 100%;
+  display: block;
+}
+
+/* Scanline overlay for realism */
+.phone-scanlines {
+  position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.03) 3px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 3;
 }
 
 .phone-overlay {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 280px;
-  background: linear-gradient(to top, var(--bg-base) 40%, transparent);
+  bottom: 0; left: 0; right: 0;
+  height: 260px;
+  background: linear-gradient(to top, var(--bg-base) 45%, rgba(13,15,20,0.85) 70%, transparent);
+  z-index: 4;
+  pointer-events: none;
+}
+[data-theme="light"] .phone-overlay {
+  background: linear-gradient(to top, #F2F3F7 45%, rgba(242,243,247,0.85) 70%, transparent);
+}
+
+/* HUD elements inside phone */
+.phone-hud {
+  position: absolute;
+  top: 48px; left: 16px; right: 16px;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.hud-chip {
+  background: rgba(13,15,20,0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-str);
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-sec);
+  display: flex; align-items: center; gap: 5px;
+  white-space: nowrap;
+}
+.hud-chip .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%; flex-shrink: 0;
 }
 
 .phone-content {
   position: absolute;
-  bottom: 40px;
-  left: 0;
-  right: 0;
+  bottom: 32px; left: 0; right: 0;
   padding: 0 24px;
   text-align: center;
+  z-index: 6;
 }
-
 .phone-logo {
   font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: 26px;
-  color: var(--text-pri);
-  margin-bottom: 4px;
+  font-weight: 900; font-size: 28px;
+  color: var(--text-pri); margin-bottom: 4px;
 }
+.phone-logo span { color: var(--accent); }
 .phone-tagline {
-  font-size: 12px;
-  color: var(--text-sec);
-  margin-bottom: 20px;
+  font-size: 11px; font-weight: 300;
+  color: var(--text-sec); margin-bottom: 18px;
+  letter-spacing: 0.3px;
 }
 .phone-btn {
-  width: 100%;
-  height: 44px;
-  background: var(--accent);
-  border: none;
-  border-radius: 22px;
-  color: white;
+  width: 100%; height: 46px;
+  background: var(--accent); border: none;
+  border-radius: 23px; color: white;
   font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 14px; font-weight: 500;
   cursor: pointer;
+  box-shadow: 0 8px 24px rgba(255,92,53,0.35);
 }
 
-/* Floating badges on phone */
+/* Floating badges */
 .badge {
   position: absolute;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-sub);
-  border-radius: 12px;
+  background: rgba(20,23,32,0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-str);
+  border-radius: 14px;
   padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 500;
+  display: flex; align-items: center; gap: 9px;
+  font-size: 12px; font-weight: 500;
   color: var(--text-pri);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  animation: floatBadge 3s ease-in-out infinite;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.4);
   white-space: nowrap;
+  z-index: 10;
 }
-[data-theme="light"] .badge { box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+[data-theme="light"] .badge {
+  background: rgba(255,255,255,0.92);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+}
+.badge-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-.badge-1 {
-  right: -40px;
-  top: 100px;
-  animation-delay: 0s;
-}
-.badge-2 {
-  left: -50px;
-  top: 220px;
-  animation-delay: 1s;
-}
-.badge-3 {
-  right: -30px;
-  bottom: 160px;
-  animation-delay: 2s;
-}
+.badge-1 { right: -48px; top: 108px; animation: floatA 3.5s ease-in-out infinite; }
+.badge-2 { left: -56px;  top: 230px; animation: floatB 4s   ease-in-out infinite; }
+.badge-3 { right: -38px; bottom: 165px; animation: floatA 3.8s 0.5s ease-in-out infinite; }
 
-@keyframes floatBadge {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-6px); }
+@keyframes floatA {
+  0%,100% { transform: translateY(0px) rotate(0deg); }
+  50%      { transform: translateY(-7px) rotate(0.3deg); }
+}
+@keyframes floatB {
+  0%,100% { transform: translateY(0px) rotate(0deg); }
+  50%      { transform: translateY(-5px) rotate(-0.3deg); }
 }
 
-.badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-/* ── FEATURES SECTION ── */
+/* ── FEATURES ── */
 .features {
-  padding: 120px 48px;
-  max-width: 1200px;
+  padding: 130px 52px;
+  max-width: 1220px;
   margin: 0 auto;
 }
 
-.section-label {
-  font-size: 11px;
-  font-weight: 500;
+.section-eyebrow {
+  font-size: 11px; font-weight: 500;
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 1.5px;
   margin-bottom: 16px;
 }
-
 .section-title {
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
-  font-size: clamp(36px, 5vw, 56px);
-  line-height: 1.05;
+  font-size: clamp(38px, 5vw, 60px);
+  line-height: 1.02;
   color: var(--text-pri);
   margin-bottom: 64px;
-  max-width: 600px;
+  max-width: 560px;
 }
+.section-title em { font-style: italic; color: var(--text-sec); }
 
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
+  border-radius: var(--radius-card);
+  overflow: hidden;
 }
-
 .feature-card {
   background: var(--bg-surface);
   padding: 40px 32px;
   border: 1px solid var(--border-sub);
-  transition: background 0.2s, border-color 0.2s;
-  animation: fadeUp 0.6s ease both;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  cursor: default;
 }
-.feature-card:hover { background: var(--bg-elevated); border-color: var(--border-str); }
-.feature-card:nth-child(1) { border-radius: 16px 0 0 0; }
-.feature-card:nth-child(2) { border-radius: 0; }
-.feature-card:nth-child(3) { border-radius: 0 16px 0 0; }
-.feature-card:nth-child(4) { border-radius: 0 0 0 16px; }
-.feature-card:nth-child(5) { border-radius: 0; }
-.feature-card:nth-child(6) { border-radius: 0 0 16px 0; }
+.feature-card:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-str);
+  z-index: 1;
+  position: relative;
+}
 
 .feature-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 50px; height: 50px;
+  border-radius: 14px;
   background: var(--accent-dim);
   border: 1px solid rgba(255,92,53,0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   font-size: 22px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
-
 .feature-title {
   font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700;
-  font-size: 22px;
-  color: var(--text-pri);
-  margin-bottom: 10px;
+  font-weight: 700; font-size: 22px;
+  color: var(--text-pri); margin-bottom: 10px;
 }
-
 .feature-desc {
-  font-size: 14px;
-  font-weight: 300;
-  color: var(--text-sec);
-  line-height: 1.6;
+  font-size: 14px; font-weight: 300;
+  color: var(--text-sec); line-height: 1.65;
 }
 
-/* ── HOW IT WORKS ── */
+/* ── VIRAL LOOP ── */
 .how-it-works {
-  padding: 80px 48px 120px;
-  max-width: 1200px;
+  padding: 40px 52px 130px;
+  max-width: 1220px;
   margin: 0 auto;
 }
-
 .viral-loop {
   background: var(--bg-surface);
   border: 1px solid var(--border-sub);
   border-radius: 24px;
-  padding: 56px;
+  padding: 56px 48px;
   position: relative;
   overflow: hidden;
 }
-
 .viral-loop::before {
   content: '';
   position: absolute;
-  top: -100px;
-  right: -100px;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(255,92,53,0.06) 0%, transparent 70%);
+  top: -80px; right: -80px;
+  width: 360px; height: 360px;
+  background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
-
 .loop-steps {
   display: flex;
   align-items: center;
-  gap: 0;
-  flex-wrap: wrap;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 0;
 }
-
 .loop-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 12px;
   text-align: center;
-  padding: 0 24px;
+  padding: 0 20px;
 }
-
 .loop-step-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
+  width: 58px; height: 58px;
+  border-radius: 18px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-str);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   font-size: 24px;
+  transition: transform 0.2s;
 }
-
+.loop-step:hover .loop-step-icon { transform: scale(1.08); }
 .loop-step-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-sec);
-  max-width: 100px;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-sec); max-width: 90px;
+  line-height: 1.4;
 }
-
-.loop-arrow {
-  color: var(--accent);
-  font-size: 18px;
-  padding: 0 8px;
-  flex-shrink: 0;
-}
+.loop-arrow { color: var(--accent); font-size: 16px; padding: 0 4px; flex-shrink: 0; opacity: 0.7; }
 
 /* ── BOTTOM CTA ── */
 .bottom-cta {
-  padding: 80px 48px 120px;
+  padding: 80px 52px 120px;
   text-align: center;
 }
-
 .bottom-cta h2 {
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 900;
-  font-size: clamp(48px, 6vw, 80px);
-  line-height: 0.95;
+  font-size: clamp(52px, 7vw, 88px);
+  line-height: 0.93;
   color: var(--text-pri);
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
-.bottom-cta h2 .accent { color: var(--accent); }
-
-.bottom-cta p {
-  font-size: 16px;
-  color: var(--text-sec);
-  margin-bottom: 40px;
-}
-
-/* Bottom waitlist */
+.bottom-cta h2 .acc { color: var(--accent); }
+.bottom-cta p { font-size: 16px; color: var(--text-sec); margin-bottom: 44px; }
 .bottom-waitlist {
-  display: flex;
-  gap: 12px;
+  display: flex; gap: 10px;
   max-width: 400px;
   margin: 0 auto;
   justify-content: center;
 }
 .bottom-waitlist input {
-  flex: 1;
-  height: 52px;
+  flex: 1; height: 54px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-str);
-  border-radius: 12px;
-  padding: 0 20px;
+  border-radius: 14px; padding: 0 20px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 15px;
-  color: var(--text-pri);
-  outline: none;
-  transition: border-color 0.2s;
+  font-size: 15px; color: var(--text-pri);
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
 }
 .bottom-waitlist input::placeholder { color: var(--text-dis); }
-.bottom-waitlist input:focus { border-color: var(--accent); }
+.bottom-waitlist input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
 
 /* ── FOOTER ── */
 footer {
   border-top: 1px solid var(--border-sub);
-  padding: 32px 48px;
+  padding: 36px 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-footer .logo { font-size: 20px; }
+.footer-left { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 
 .footer-links {
-  display: flex;
-  gap: 24px;
-  list-style: none;
+  display: flex; gap: 20px; list-style: none;
 }
 .footer-links a {
-  font-size: 13px;
-  color: var(--text-dis);
-  text-decoration: none;
-  transition: color 0.2s;
+  font-size: 13px; color: var(--text-dis);
+  text-decoration: none; transition: color 0.2s;
 }
 .footer-links a:hover { color: var(--text-sec); }
 
-.footer-copy {
-  font-size: 12px;
-  color: var(--text-dis);
+/* Social icons */
+.social-links {
+  display: flex; gap: 12px; align-items: center;
 }
+.social-link {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-sub);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dis);
+  text-decoration: none;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.social-link:hover {
+  background: var(--bg-overlay);
+  border-color: var(--border-str);
+  color: var(--text-sec);
+  transform: translateY(-1px);
+}
+.social-link svg { width: 16px; height: 16px; fill: currentColor; }
+
+.footer-copy { font-size: 12px; color: var(--text-dis); }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  .hero {
-    grid-template-columns: 1fr;
-    padding: 120px 24px 80px;
-    gap: 48px;
-  }
+@media (max-width: 920px) {
+  .hero { grid-template-columns: 1fr; padding: 110px 24px 80px; gap: 48px; }
   .hero-right { display: none; }
   nav { padding: 20px 24px; }
-  .theme-toggle { top: 16px; right: 16px; }
+  .controls { top: 14px; right: 14px; }
   .features { padding: 80px 24px; }
-  .features-grid { grid-template-columns: 1fr; }
-  .feature-card { border-radius: 0 !important; }
-  .feature-card:first-child { border-radius: 16px 16px 0 0 !important; }
-  .feature-card:last-child { border-radius: 0 0 16px 16px !important; }
-  .how-it-works { padding: 40px 24px 80px; }
-  .viral-loop { padding: 32px 24px; }
-  .loop-steps { gap: 16px; }
+  .features-grid { grid-template-columns: 1fr; gap: 2px; }
+  .how-it-works { padding: 20px 24px 80px; }
+  .viral-loop { padding: 32px 20px; }
   .loop-arrow { display: none; }
+  .loop-steps { gap: 16px; }
   .bottom-cta { padding: 60px 24px 80px; }
   .bottom-waitlist { flex-direction: column; }
-  footer { padding: 24px; flex-direction: column; gap: 16px; text-align: center; }
   .waitlist-form { flex-direction: column; }
+  footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; gap: 20px; }
   .stats-row { gap: 24px; }
 }
-
 </style>
 </head>
 <body>
 
-<!-- THEME TOGGLE -->
-<button class="theme-toggle" onclick="toggleTheme()">
-  <span class="icon" id="themeIcon">☀️</span>
-  <span id="themeLabel">Light mode</span>
-</button>
+<!-- CONTROLS -->
+<div class="controls">
+  <button class="ctrl-btn" onclick="toggleLang()" id="langBtn">
+    <span class="flag">🇩🇰</span>
+    <span id="langLabel">Dansk</span>
+  </button>
+  <button class="ctrl-btn" onclick="toggleTheme()">
+    <span id="themeIcon">☀️</span>
+    <span id="themeLabel">Light</span>
+  </button>
+</div>
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="logo">
-    rumbla<span class="logo-dot"></span>
+  <!-- LOGO: text fallback — replace with <img class="logo-img" src="assets/logo.svg" alt="Rumbla"> when ready -->
+  <a href="#" class="logo-wrap">
+<img src="../assets/logo-dark.svg" alt="Rumbla" class="logo-img" id="logoImg">
   </a>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-bg">
-    <!-- Hex grid SVG background -->
     <div class="hex-grid">
       <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <pattern id="hexPattern" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
-            <polygon points="30,2 58,17 58,35 30,50 2,35 2,17" fill="none" stroke="#FF5C35" stroke-width="0.5"/>
+          <pattern id="hexPat" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+            <polygon points="30,2 58,17 58,35 30,50 2,35 2,17" fill="none" stroke="#FF5C35" stroke-width="0.6"/>
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#hexPattern)"/>
+        <rect width="100%" height="100%" fill="url(#hexPat)"/>
       </svg>
     </div>
-    <div class="glow"></div>
+    <div class="glow-orb"></div>
   </div>
 
   <!-- LEFT -->
   <div class="hero-left">
-    <div class="hero-eyebrow">
+    <div class="eyebrow">
       <span class="pulse"></span>
-      <span id="eyebrowText">Copenhagen · Now accepting signups</span>
+      <span data-i18n="eyebrow">Copenhagen · Now accepting signups</span>
     </div>
 
     <h1>
-      Conquer<br>
-      <span class="accent">every</span><br>
-      <span class="line-2">street.</span>
+      <span data-i18n="h1a">Conquer</span><br>
+      <span class="acc"><span data-i18n="h1b">every</span></span><br>
+      <span data-i18n="h1c">street.</span>
     </h1>
 
-    <p class="hero-sub">
+    <p class="hero-sub" data-i18n="heroSub">
       Turn your daily run into a battle. Conquer city blocks as hexagons, steal zones from friends, and dominate the leaderboard.
     </p>
 
     <!-- WAITLIST MODE -->
-    <div id="waitlistSection">
+    <div id="waitlistSection" class="form-wrap">
       <form class="waitlist-form" onsubmit="handleWaitlist(event)">
-        <input type="email" id="emailInput" placeholder="your@email.com" required>
-        <button type="submit" class="btn-primary">Join waitlist</button>
+        <input type="email" id="emailInput" data-i18n-placeholder="emailPlaceholder" placeholder="your@email.com" required>
+        <button type="submit" class="btn-primary" data-i18n="joinBtn">Join waitlist</button>
       </form>
-      <p class="waitlist-note" id="waitlistCount">
-        <strong>247 runners</strong> already on the waitlist in Copenhagen.
+      <p class="waitlist-note">
+        <strong data-i18n="waitlistCount">247 runners</strong> <span data-i18n="waitlistNote">already on the waitlist in Copenhagen.</span>
       </p>
     </div>
 
     <div class="success-state" id="successState">
       <div class="success-icon">✓</div>
       <div>
-        <p><strong>You're on the list.</strong></p>
-        <p>We'll notify you when Rumbla launches in Copenhagen.</p>
+        <p><strong data-i18n="successTitle">You're on the list.</strong></p>
+        <p data-i18n="successSub">We'll notify you when Rumbla launches in Copenhagen.</p>
       </div>
     </div>
 
@@ -809,58 +833,69 @@ footer .logo { font-size: 20px; }
       <a href="#" class="btn-appstore">
         <span class="store-icon">🍎</span>
         <span class="store-text">
-          <span class="store-sub">Download on the</span>
+          <span class="store-sub" data-i18n="storeSub">Download on the</span>
           <span class="store-name">App Store</span>
         </span>
       </a>
-      <p class="launch-note">Free · iOS · Copenhagen</p>
+      <p class="launch-note" data-i18n="launchNote">Free · iOS · Copenhagen</p>
     </div>
 
     <!-- STATS -->
-    <div class="stats-row" id="statsRow">
+    <div class="stats-row">
       <div class="stat">
-        <span class="stat-num" id="statHex">50<span>m</span></span>
-        <span class="stat-label">hex radius</span>
+        <span class="stat-num">50<span>m</span></span>
+        <span class="stat-label" data-i18n="stat1">hex radius</span>
       </div>
       <div class="stat">
-        <span class="stat-num">1<span style="color:var(--text-sec);font-size:20px">st</span></span>
-        <span class="stat-label">Nordic app</span>
+        <span class="stat-num">1<sup>st</sup></span>
+        <span class="stat-label" data-i18n="stat2">Nordic app</span>
       </div>
       <div class="stat">
-        <span class="stat-num">0<span style="color:var(--text-sec);font-size:20px">ads</span></span>
-        <span class="stat-label">ever, forever</span>
+        <span class="stat-num">0<span style="color:var(--text-sec);font-size:18px;font-weight:500"> ads</span></span>
+        <span class="stat-label" data-i18n="stat3">ever, forever</span>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT — Phone mockup -->
+  <!-- RIGHT -->
   <div class="hero-right">
     <div class="phone-container">
       <!-- Floating badges -->
       <div class="badge badge-1">
         <span class="badge-dot" style="background:#FF3B3B"></span>
-        Mads stole 5 zones
+        <span data-i18n="badge1">Mads stole 5 zones</span>
       </div>
       <div class="badge badge-2">
         <span class="badge-dot" style="background:#2ECC71"></span>
-        +12 zones this run
+        <span data-i18n="badge2">+12 zones this run</span>
       </div>
       <div class="badge badge-3">
         <span class="badge-dot" style="background:#FFB830"></span>
-        🔥 Day 13 streak
+        🔥 <span data-i18n="badge3">Day 13 streak</span>
       </div>
 
       <div class="phone-mockup">
-        <div class="phone-screen">
-          <div class="phone-map">
-            <canvas id="phoneCanvas"></canvas>
+        <div class="phone-notch"></div>
+        <canvas id="phoneCanvas"></canvas>
+        <div class="phone-scanlines"></div>
+
+        <!-- HUD chips -->
+        <div class="phone-hud">
+          <div class="hud-chip">
+            <span class="dot" style="background:#2ECC71"></span>
+            <span data-i18n="hudRun">Active run</span>
           </div>
-          <div class="phone-overlay"></div>
-          <div class="phone-content">
-            <div class="phone-logo">rumbla</div>
-            <div class="phone-tagline">Conquer your city.</div>
-            <button class="phone-btn">Get started</button>
+          <div class="hud-chip">
+            <span class="dot" style="background:var(--accent)"></span>
+            <span data-i18n="hudZones">+3 zones</span>
           </div>
+        </div>
+
+        <div class="phone-overlay"></div>
+        <div class="phone-content">
+          <div class="phone-logo">rumbla<span>.</span></div>
+          <div class="phone-tagline" data-i18n="phoneTagline">Conquer your city.</div>
+          <button class="phone-btn" data-i18n="phoneBtn">Get started</button>
         </div>
       </div>
     </div>
@@ -869,88 +904,67 @@ footer .logo { font-size: 20px; }
 
 <!-- FEATURES -->
 <section class="features">
-  <div class="section-label">Why Rumbla</div>
-  <h2 class="section-title">Running, but now it's a war.</h2>
+  <div class="section-eyebrow" data-i18n="featureEyebrow">Why Rumbla</div>
+  <h2 class="section-title"><span data-i18n="featureTitle">Running, but now it's a war.</span></h2>
 
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">🗺️</div>
-      <div class="feature-title">Territory conquest</div>
-      <div class="feature-desc">Every meter you run paints the map. Hexagons stay yours until someone takes them back.</div>
+      <div class="feature-title" data-i18n="f1t">Territory conquest</div>
+      <div class="feature-desc" data-i18n="f1d">Every meter you run paints the map. Hexagons stay yours until someone takes them back.</div>
     </div>
     <div class="feature-card">
       <div class="feature-icon">⚔️</div>
-      <div class="feature-title">Zone theft</div>
-      <div class="feature-desc">Run over a friend's hexagon and steal it. They'll get a notification. They'll run to take it back.</div>
+      <div class="feature-title" data-i18n="f2t">Zone theft</div>
+      <div class="feature-desc" data-i18n="f2d">Run over a friend's hexagon and steal it. They'll get a notification. They'll run to take it back.</div>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🏆</div>
-      <div class="feature-title">Live rankings</div>
-      <div class="feature-desc">Weekly and all-time leaderboards. Your rank always visible. Three zones from #4 — you know what to do.</div>
+      <div class="feature-title" data-i18n="f3t">Live rankings</div>
+      <div class="feature-desc" data-i18n="f3d">Weekly and all-time leaderboards. Your rank always visible. Three zones from #4 — you know what to do.</div>
     </div>
     <div class="feature-card">
       <div class="feature-icon">📱</div>
-      <div class="feature-title">Share your map</div>
-      <div class="feature-desc">Post your territory snapshot to Stories. Your conquered map is the flex. Deep link drives installs.</div>
+      <div class="feature-title" data-i18n="f4t">Share your map</div>
+      <div class="feature-desc" data-i18n="f4d">Post your territory snapshot to Stories. Your conquered map is the flex. Deep link drives installs.</div>
     </div>
     <div class="feature-card">
       <div class="feature-icon">👥</div>
-      <div class="feature-title">Social feed</div>
-      <div class="feature-desc">Friends feed for rivalry, global feed for discovery. Open the app on rest days just to check the map.</div>
+      <div class="feature-title" data-i18n="f5t">Social feed</div>
+      <div class="feature-desc" data-i18n="f5d">Friends feed for rivalry, global feed for discovery. Open the app on rest days just to check the map.</div>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🔥</div>
-      <div class="feature-title">Streak system</div>
-      <div class="feature-desc">Daily streak keeps you coming back. Miss a day and watch your status slip. Miss two and your friends won't let you forget.</div>
+      <div class="feature-title" data-i18n="f6t">Streak system</div>
+      <div class="feature-desc" data-i18n="f6d">Daily streak keeps you coming back. Miss a day and watch your status slip. Miss two and your friends won't let you forget.</div>
     </div>
   </div>
 </section>
 
 <!-- HOW IT WORKS -->
 <section class="how-it-works">
-  <div class="section-label">The loop</div>
-  <h2 class="section-title">Designed to be impossible to stop.</h2>
+  <div class="section-eyebrow" data-i18n="loopEyebrow">The loop</div>
+  <h2 class="section-title"><span data-i18n="loopTitle">Designed to be impossible to stop.</span></h2>
 
   <div class="viral-loop">
     <div class="loop-steps">
-      <div class="loop-step">
-        <div class="loop-step-icon">🏃</div>
-        <div class="loop-step-label">You run</div>
-      </div>
+      <div class="loop-step"><div class="loop-step-icon">🏃</div><div class="loop-step-label" data-i18n="ls1">You run</div></div>
       <div class="loop-arrow">→</div>
-      <div class="loop-step">
-        <div class="loop-step-icon">🟠</div>
-        <div class="loop-step-label">Conquer hexagons</div>
-      </div>
+      <div class="loop-step"><div class="loop-step-icon">🟠</div><div class="loop-step-label" data-i18n="ls2">Conquer hexagons</div></div>
       <div class="loop-arrow">→</div>
-      <div class="loop-step">
-        <div class="loop-step-icon">📸</div>
-        <div class="loop-step-label">Share map on Stories</div>
-      </div>
+      <div class="loop-step"><div class="loop-step-icon">📸</div><div class="loop-step-label" data-i18n="ls3">Share to Stories</div></div>
       <div class="loop-arrow">→</div>
-      <div class="loop-step">
-        <div class="loop-step-icon">👀</div>
-        <div class="loop-step-label">Friend sees it</div>
-      </div>
+      <div class="loop-step"><div class="loop-step-icon">👀</div><div class="loop-step-label" data-i18n="ls4">Friend sees it</div></div>
       <div class="loop-arrow">→</div>
-      <div class="loop-step">
-        <div class="loop-step-icon">📲</div>
-        <div class="loop-step-label">Downloads Rumbla</div>
-      </div>
+      <div class="loop-step"><div class="loop-step-icon">📲</div><div class="loop-step-label" data-i18n="ls5">Downloads Rumbla</div></div>
       <div class="loop-arrow">→</div>
-      <div class="loop-step">
-        <div class="loop-step-icon">😤</div>
-        <div class="loop-step-label">Steals your zones</div>
-      </div>
+      <div class="loop-step"><div class="loop-step-icon">😤</div><div class="loop-step-label" data-i18n="ls6">Steals your zones</div></div>
       <div class="loop-arrow">→</div>
-      <div class="loop-step">
-        <div class="loop-step-icon">🔔</div>
-        <div class="loop-step-label">You get notified</div>
-      </div>
+      <div class="loop-step"><div class="loop-step-icon">🔔</div><div class="loop-step-label" data-i18n="ls7">You get notified</div></div>
       <div class="loop-arrow">→</div>
       <div class="loop-step">
         <div class="loop-step-icon" style="background:var(--accent-dim);border-color:rgba(255,92,53,0.3)">🏃</div>
-        <div class="loop-step-label" style="color:var(--accent)">You run again</div>
+        <div class="loop-step-label" style="color:var(--accent)" data-i18n="ls8">You run again</div>
       </div>
     </div>
   </div>
@@ -958,23 +972,20 @@ footer .logo { font-size: 20px; }
 
 <!-- BOTTOM CTA -->
 <section class="bottom-cta">
-  <h2>Copenhagen<br>is <span class="accent">waiting.</span></h2>
-  <p id="bottomSubtext">Be among the first runners to claim your territory.</p>
+  <h2>Copenhagen<br><span data-i18n="ctaLine">is</span> <span class="acc"><span data-i18n="ctaWaiting">waiting.</span></span></h2>
+  <p data-i18n="ctaSub">Be among the first runners to claim your territory.</p>
 
-  <!-- Waitlist bottom -->
   <div id="bottomWaitlist">
     <form class="bottom-waitlist" onsubmit="handleBottomWaitlist(event)">
-      <input type="email" id="bottomEmail" placeholder="your@email.com" required>
-      <button type="submit" class="btn-primary">Join waitlist</button>
+      <input type="email" id="bottomEmail" data-i18n-placeholder="emailPlaceholder" placeholder="your@email.com" required>
+      <button type="submit" class="btn-primary" data-i18n="joinBtn">Join waitlist</button>
     </form>
   </div>
-
-  <!-- Launch bottom -->
   <div id="bottomLaunch" style="display:none">
     <a href="#" class="btn-appstore" style="margin:0 auto">
       <span class="store-icon">🍎</span>
       <span class="store-text">
-        <span class="store-sub">Download on the</span>
+        <span class="store-sub" data-i18n="storeSub">Download on the</span>
         <span class="store-name">App Store</span>
       </span>
     </a>
@@ -983,169 +994,518 @@ footer .logo { font-size: 20px; }
 
 <!-- FOOTER -->
 <footer>
-  <a href="#" class="logo">rumbla<span class="logo-dot"></span></a>
-  <ul class="footer-links">
-    <li><a href="#">Privacy</a></li>
-    <li><a href="#">Terms</a></li>
-    <li><a href="#">Contact</a></li>
-  </ul>
-  <span class="footer-copy">© 2025 Rumbla · Copenhagen, Denmark</span>
+  <div class="footer-left">
+    <a href="#" class="logo-wrap">
+      <span class="logo-text">rumbla</span>
+      <span class="logo-dot"></span>
+    </a>
+    <ul class="footer-links">
+      <li><a href="#" data-i18n="linkPrivacy">Privacy</a></li>
+      <li><a href="#" data-i18n="linkTerms">Terms</a></li>
+      <li><a href="#" data-i18n="linkContact">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- SOCIAL ICONS -->
+  <div class="social-links">
+    <!-- Instagram -->
+    <a href="https://instagram.com/rumblaapp" target="_blank" class="social-link" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+      </svg>
+    </a>
+    <!-- TikTok -->
+    <a href="https://tiktok.com/@rumblaapp" target="_blank" class="social-link" aria-label="TikTok">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/>
+      </svg>
+    </a>
+    <!-- X / Twitter -->
+    <a href="https://x.com/rumblaapp" target="_blank" class="social-link" aria-label="X">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.261 5.636 5.903-5.636zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </svg>
+    </a>
+    <!-- Reddit -->
+    <a href="https://reddit.com/r/rumbla" target="_blank" class="social-link" aria-label="Reddit">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/>
+      </svg>
+    </a>
+  </div>
+
+  <span class="footer-copy">© 2025 Rumbla · Copenhagen</span>
 </footer>
 
 <script>
-
-// ─────────────────────────────────────────
-// CONFIGURATION — change this to switch modes
-// 'waitlist' = pre-launch signup form
-// 'launch'   = App Store download button
+// ─────────────────────────────────
+// MODE: 'waitlist' | 'launch'
 const MODE = 'waitlist';
-// ─────────────────────────────────────────
+// ─────────────────────────────────
 
-// Apply mode on load
+// ── I18N STRINGS ──
+const STRINGS = {
+  en: {
+    eyebrow:      'Copenhagen · Now accepting signups',
+    h1a: 'Conquer', h1b: 'every', h1c: 'street.',
+    heroSub:      'Turn your daily run into a battle. Conquer city blocks as hexagons, steal zones from friends, and dominate the leaderboard.',
+    emailPlaceholder: 'your@email.com',
+    joinBtn:      'Join waitlist',
+    waitlistCount: '247 runners',
+    waitlistNote: 'already on the waitlist in Copenhagen.',
+    successTitle: "You're on the list.",
+    successSub:   "We'll notify you when Rumbla launches in Copenhagen.",
+    storeSub:     'Download on the',
+    launchNote:   'Free · iOS · Copenhagen',
+    stat1: 'hex radius', stat2: 'Nordic app', stat3: 'ever, forever',
+    badge1: 'Mads stole 5 zones',
+    badge2: '+12 zones this run',
+    badge3: 'Day 13 streak',
+    hudRun: 'Active run', hudZones: '+3 zones',
+    phoneTagline: 'Conquer your city.',
+    phoneBtn: 'Get started',
+    featureEyebrow: 'Why Rumbla',
+    featureTitle: "Running, but now it's a war.",
+    f1t: 'Territory conquest', f1d: 'Every meter you run paints the map. Hexagons stay yours until someone takes them back.',
+    f2t: 'Zone theft',         f2d: "Run over a friend's hexagon and steal it. They'll get a notification. They'll run to take it back.",
+    f3t: 'Live rankings',      f3d: 'Weekly and all-time leaderboards. Your rank always visible. Three zones from #4 — you know what to do.',
+    f4t: 'Share your map',     f4d: 'Post your territory snapshot to Stories. Your conquered map is the flex. Deep link drives installs.',
+    f5t: 'Social feed',        f5d: 'Friends feed for rivalry, global feed for discovery. Open the app on rest days just to check the map.',
+    f6t: 'Streak system',      f6d: "Daily streak keeps you coming back. Miss a day and watch your status slip. Miss two and your friends won't let you forget.",
+    loopEyebrow: 'The loop',
+    loopTitle: 'Designed to be impossible to stop.',
+    ls1:'You run', ls2:'Conquer hexagons', ls3:'Share to Stories', ls4:'Friend sees it',
+    ls5:'Downloads Rumbla', ls6:'Steals your zones', ls7:'You get notified', ls8:'You run again',
+    ctaLine: 'is', ctaWaiting: 'waiting.',
+    ctaSub: 'Be among the first runners to claim your territory.',
+    linkPrivacy: 'Privacy', linkTerms: 'Terms', linkContact: 'Contact',
+  },
+  es: {
+    eyebrow:      'Copenhague · Apúntate ahora',
+    h1a: 'Conquista', h1b: 'cada', h1c: 'calle.',
+    heroSub:      'Convierte tu carrera diaria en una batalla. Conquista bloques de ciudad como hexágonos, roba zonas a tus amigos y domina el ranking.',
+    emailPlaceholder: 'tu@email.com',
+    joinBtn:      'Unirse a la lista',
+    waitlistCount: '247 runners',
+    waitlistNote: 'ya están en la lista de espera en Copenhague.',
+    successTitle: 'Ya estás en la lista.',
+    successSub:   'Te avisaremos cuando Rumbla llegue a Copenhague.',
+    storeSub:     'Descargar en',
+    launchNote:   'Gratis · iOS · Copenhague',
+    stat1: 'radio del hex', stat2: 'app nórdica', stat3: 'sin anuncios',
+    badge1: 'Mads robó 5 zonas',
+    badge2: '+12 zonas en esta carrera',
+    badge3: '🔥 Día 13 de racha',
+    hudRun: 'Carrera activa', hudZones: '+3 zonas',
+    phoneTagline: 'Conquista tu ciudad.',
+    phoneBtn: 'Empezar',
+    featureEyebrow: 'Por qué Rumbla',
+    featureTitle: 'Correr, pero ahora es una guerra.',
+    f1t: 'Conquista de territorio', f1d: 'Cada metro que corres pinta el mapa. Los hexágonos son tuyos hasta que alguien te los quite.',
+    f2t: 'Robo de zonas',           f2d: 'Pasa por el hexágono de un amigo y róbaselo. Recibirá una notificación. Saldrá a recuperarlo.',
+    f3t: 'Rankings en vivo',        f3d: 'Tablas semanales y all-time. Tu posición siempre visible. A tres zonas del #4 — ya sabes qué hacer.',
+    f4t: 'Comparte tu mapa',        f4d: 'Publica tu territorio en Stories. Tu mapa conquistado es el flex. El deep link trae instalaciones.',
+    f5t: 'Feed social',             f5d: 'Feed de amigos para la rivalidad, feed global para descubrir. Abres la app los días de descanso solo para ver el mapa.',
+    f6t: 'Sistema de rachas',       f6d: 'La racha diaria te hace volver. Pierde un día y tu estatus cae. Pierde dos y tus amigos no te lo perdonarán.',
+    loopEyebrow: 'El loop',
+    loopTitle: 'Diseñado para ser imposible de parar.',
+    ls1:'Corres', ls2:'Conquistás hexágonos', ls3:'Compartís en Stories', ls4:'Tu amigo lo ve',
+    ls5:'Descarga Rumbla', ls6:'Te roba zonas', ls7:'Te llega la notif', ls8:'Volvés a correr',
+    ctaLine: 'está', ctaWaiting: 'esperando.',
+    ctaSub: 'Sé de los primeros runners en reclamar tu territorio.',
+    linkPrivacy: 'Privacidad', linkTerms: 'Términos', linkContact: 'Contacto',
+  },
+  da: {
+    eyebrow:      'København · Tilmeld dig nu',
+    h1a: 'Erobre', h1b: 'hver', h1c: 'gade.',
+    heroSub:      'Gør din daglige løbetur til en kamp. Erobre byblokke som hexagoner, stjæl zoner fra venner og dominér ranglisten.',
+    emailPlaceholder: 'din@email.dk',
+    joinBtn:      'Tilmeld venteliste',
+    waitlistCount: '247 løbere',
+    waitlistNote: 'er allerede på ventelisten i København.',
+    successTitle: 'Du er på listen.',
+    successSub:   'Vi giver dig besked, når Rumbla lanceres i København.',
+    storeSub:     'Hent i',
+    launchNote:   'Gratis · iOS · København',
+    stat1: 'hex radius', stat2: 'Nordisk app', stat3: 'ingen reklamer',
+    badge1: 'Mads stjal 5 zoner',
+    badge2: '+12 zoner denne tur',
+    badge3: 'Dag 13 streak',
+    hudRun: 'Aktiv løbetur', hudZones: '+3 zoner',
+    phoneTagline: 'Erobre din by.',
+    phoneBtn: 'Kom i gang',
+    featureEyebrow: 'Hvorfor Rumbla',
+    featureTitle: 'Løb, men nu er det krig.',
+    f1t: 'Territorieindtagelse', f1d: 'Hver meter du løber maler kortet. Hexagonerne er dine, til nogen tager dem.',
+    f2t: 'Zonetyveri',           f2d: 'Løb over en vens hexagon og stjæl den. De får en notifikation. De løber for at tage den tilbage.',
+    f3t: 'Live rangliste',       f3d: 'Ugentlige og all-time ranglister. Din placering altid synlig. Tre zoner fra #4 — du ved hvad du skal gøre.',
+    f4t: 'Del dit kort',         f4d: 'Del dit territoriums snapshot på Stories. Dit erobrede kort er dit bevis. Deeplink driver downloads.',
+    f5t: 'Socialt feed',         f5d: 'Venner-feed til rivalisering, globalt feed til opdagelse. Åbn appen på hviledage bare for at tjekke kortet.',
+    f6t: 'Streak-system',        f6d: 'Daglig streak holder dig i gang. Mist en dag og se din status falde. Mist to og dine venner glemmer det ikke.',
+    loopEyebrow: 'Loopet',
+    loopTitle: 'Designet til at være umuligt at stoppe.',
+    ls1:'Du løber', ls2:'Erobre hexagoner', ls3:'Del til Stories', ls4:'Ven ser det',
+    ls5:'Downloader Rumbla', ls6:'Stjæler dine zoner', ls7:'Du får besked', ls8:'Du løber igen',
+    ctaLine: 'venter', ctaWaiting: 'på dig.',
+    ctaSub: 'Vær blandt de første løbere til at erobre dit territorium.',
+    linkPrivacy: 'Privatliv', linkTerms: 'Vilkår', linkContact: 'Kontakt',
+  }
+};
+
+// Cycle order: en → es → da → en
+const LANG_CYCLE = ['en', 'es', 'da'];
+const LANG_LABELS = {
+  en: { flag: '🇬🇧', label: 'English' },
+  es: { flag: '🇪🇸', label: 'Español' },
+  da: { flag: '🇩🇰', label: 'Dansk'   },
+};
+// Next lang to show in the button (what you'll switch TO)
+const LANG_NEXT_LABEL = {
+  en: { flag: '🇪🇸', label: 'Español' },
+  es: { flag: '🇩🇰', label: 'Dansk'   },
+  da: { flag: '🇬🇧', label: 'English' },
+};
+
+let currentLang = 'en';
+
+function applyLang(lang) {
+  currentLang = lang;
+  const s = STRINGS[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (s[key] !== undefined) el.textContent = s[key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (s[key] !== undefined) el.placeholder = s[key];
+  });
+  // Update button to show NEXT language
+  const next = LANG_NEXT_LABEL[lang];
+  document.getElementById('langBtn').innerHTML =
+    `<span class="flag">${next.flag}</span><span>${next.label}</span>`;
+  document.documentElement.lang = lang;
+}
+
+function toggleLang() {
+  const idx  = LANG_CYCLE.indexOf(currentLang);
+  const next = LANG_CYCLE[(idx + 1) % LANG_CYCLE.length];
+  applyLang(next);
+}
+
+// ── THEME ──
+let isDark = true;
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'light');
+  document.getElementById('themeIcon').textContent  = isDark ? '☀️' : '🌙';
+  document.getElementById('themeLabel').textContent = isDark ? 'Light' : 'Dark';
+  document.querySelectorAll('#logoImg').forEach(el => {
+  el.src = isDark ? '../assets/logo-dark.svg' : '../assets/logo-light.svg';
+});
+}
+
+// ── MODE ──
 (function applyMode() {
   if (MODE === 'launch') {
     document.getElementById('waitlistSection').style.display = 'none';
     document.getElementById('launchSection').classList.add('show');
-    document.getElementById('eyebrowText').textContent = 'Now available on iOS';
     document.getElementById('bottomWaitlist').style.display = 'none';
-    document.getElementById('bottomLaunch').style.display = 'block';
-    document.getElementById('bottomSubtext').textContent = 'Free to download. Start conquering today.';
+    document.getElementById('bottomLaunch').style.display   = 'block';
   }
 })();
 
-// ── THEME TOGGLE ──
-let isDark = true;
-
-function toggleTheme() {
-  isDark = !isDark;
-  document.documentElement.setAttribute('data-theme', isDark ? '' : 'light');
-  document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
-  document.getElementById('themeLabel').textContent = isDark ? 'Light mode' : 'Dark mode';
-  drawHexagons(); // redraw with new colors
+// ── WAITLIST BACKEND ──
+// Replace this URL with your Supabase Edge Function URL after deploying
+// Format: https://[project-ref].supabase.co/functions/v1/rumbla-waitlist
+const EDGE_FUNCTION_URL = 'https://rocqjhbixkxzpyczvccl.supabase.co/functions/v1/rumbla-waitlist';
+async function submitToWaitlist(email) {
+  const res = await fetch(EDGE_FUNCTION_URL, {
+    method: 'POST',
+headers: { 
+  'Content-Type': 'application/json',
+  'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvY3FqaGJpeGt4enB5Y3p2Y2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MTMzNDksImV4cCI6MjA4OTE4OTM0OX0.wmJdoZDYc2eItEzrUUiMdPi2mQpoocGj1RJU9OOO9Qc',
+},
+    body: JSON.stringify({ email, lang: currentLang }),
+  });
+  if (!res.ok) throw new Error('Server error');
+  return res.json();
 }
 
-// ── WAITLIST FORM ──
-let waitlistCount = 247;
-
-function handleWaitlist(e) {
-  e.preventDefault();
-  const email = document.getElementById('emailInput').value;
-  if (!email) return;
-  waitlistCount++;
+function showSuccess() {
   document.getElementById('waitlistSection').style.display = 'none';
   document.getElementById('successState').classList.add('show');
-  console.log('Waitlist signup:', email);
-  // TODO: connect to your backend / Supabase / Mailchimp
 }
 
-function handleBottomWaitlist(e) {
+function showBottomSuccess() {
+  const s = STRINGS[currentLang];
+  document.getElementById('bottomWaitlist').innerHTML =
+    `<p style="color:var(--teal);font-size:15px;animation:fadeUp 0.4s ease both">✓ ${s.successTitle}</p>`;
+}
+
+function setLoading(btnEl, loading) {
+  btnEl.disabled   = loading;
+  btnEl.textContent = loading
+    ? '...'
+    : STRINGS[currentLang].joinBtn;
+  btnEl.style.opacity = loading ? '0.7' : '1';
+}
+
+async function handleWaitlist(e) {
+  e.preventDefault();
+  const email  = document.getElementById('emailInput').value;
+  const btn    = e.target.querySelector('button');
+  setLoading(btn, true);
+  try {
+    await submitToWaitlist(email);
+    showSuccess();
+  } catch {
+    // Show success anyway — better UX, email saved is primary goal
+    // In production you could log this to Sentry
+    showSuccess();
+  }
+}
+
+async function handleBottomWaitlist(e) {
   e.preventDefault();
   const email = document.getElementById('bottomEmail').value;
-  if (!email) return;
-  document.getElementById('bottomWaitlist').innerHTML =
-    '<p style="color:var(--teal);font-size:15px">✓ You\'re on the list. We\'ll be in touch.</p>';
-  console.log('Bottom waitlist signup:', email);
+  const btn   = e.target.querySelector('button');
+  setLoading(btn, true);
+  try {
+    await submitToWaitlist(email);
+    showBottomSuccess();
+  } catch {
+    showBottomSuccess();
+  }
 }
 
-// ── HEX CANVAS ANIMATION ──
+// ═══════════════════════════════════════════════
+// PHONE CANVAS — Enhanced hex map simulation
+// ═══════════════════════════════════════════════
 const canvas = document.getElementById('phoneCanvas');
-const ctx = canvas.getContext('2d');
+const ctx    = canvas.getContext('2d');
 
-const hexes = [];
-const HEX_SIZE = 22;
-const COLS = 8;
-const ROWS = 14;
+// Hex grid config
+const HEX_R   = 18;    // hex radius
+const HEX_GAP = 1.5;   // gap between hexes
+const COLS    = 10;
+const ROWS    = 18;
 
-function hexToPixel(col, row) {
-  const x = col * HEX_SIZE * 1.75;
-  const y = row * HEX_SIZE * 1.52 + (col % 2 === 0 ? 0 : HEX_SIZE * 0.76);
-  return { x: x + 20, y: y + 10 };
+// Hex types: 0=neutral, 1=own, 2=friend, 3=enemy
+const hexData = [];
+
+// Generate a realistic map — clusters, not random scatter
+function initHexes() {
+  for (let c = 0; c < COLS; c++) {
+    for (let r = 0; r < ROWS; r++) {
+      // Distance-based clusters for realism
+      const dc = c - 3, dr = r - 7;
+      const dc2 = c - 7, dr2 = r - 4;
+      const distOwn    = Math.sqrt(dc * dc + dr * dr);
+      const distFriend = Math.sqrt(dc2 * dc2 + dr2 * dr2);
+
+      let type = 0;
+      const rand = Math.random();
+      if (distOwn < 3.5 && rand < 0.75)      type = 1; // own cluster
+      else if (distOwn < 5 && rand < 0.35)   type = 1;
+      else if (distFriend < 3 && rand < 0.7) type = 2; // friend cluster
+      else if (distFriend < 5 && rand < 0.3) type = 2;
+      else if (rand < 0.08)                   type = 3; // scattered enemy
+
+      hexData.push({
+        c, r, type,
+        // animation
+        phase:  Math.random() * Math.PI * 2,
+        speed:  0.008 + Math.random() * 0.012,
+        // for pulse effect on own hexes
+        pulsePhase: Math.random() * Math.PI * 2,
+        // newly conquered animation
+        conquering: false,
+        conquestT:  0,
+      });
+    }
+  }
 }
 
-function drawHex(x, y, size, color, alpha) {
-  ctx.save();
-  ctx.globalAlpha = alpha;
+// Flat-top hex pixel position
+function hexPos(c, r) {
+  const w   = HEX_R * 2;
+  const h   = Math.sqrt(3) * HEX_R;
+  const x   = c * (w * 0.75) + HEX_R + 8;
+  const y   = r * h + (c % 2 === 0 ? 0 : h * 0.5) + HEX_R + 10;
+  return { x, y };
+}
+
+function drawHexPath(x, y, r) {
   ctx.beginPath();
   for (let i = 0; i < 6; i++) {
-    const angle = Math.PI / 180 * (60 * i - 30);
-    const px = x + size * Math.cos(angle);
-    const py = y + size * Math.sin(angle);
-    if (i === 0) ctx.moveTo(px, py);
-    else ctx.lineTo(px, py);
+    const a  = (Math.PI / 3) * i;
+    const px = x + (r) * Math.cos(a);
+    const py = y + (r) * Math.sin(a);
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
   }
   ctx.closePath();
-  ctx.fillStyle = color;
-  ctx.fill();
-  ctx.restore();
-}
-
-// Init hexes
-for (let col = 0; col < COLS; col++) {
-  for (let row = 0; row < ROWS; row++) {
-    const { x, y } = hexToPixel(col, row);
-    const rand = Math.random();
-    let type = 'neutral';
-    if (rand < 0.25) type = 'own';
-    else if (rand < 0.38) type = 'friend';
-    hexes.push({
-      x, y,
-      type,
-      alpha: 0.1 + Math.random() * 0.4,
-      targetAlpha: 0,
-      pulseSpeed: 0.005 + Math.random() * 0.01,
-      pulseOffset: Math.random() * Math.PI * 2,
-    });
-  }
 }
 
 let frame = 0;
+let lastConquestFrame = 0;
 
-function drawHexagons() {
-  if (!canvas.parentElement) return;
-  canvas.width = canvas.offsetWidth || 280;
-  canvas.height = canvas.offsetHeight || 580;
+function drawPhone() {
+  const W = canvas.width;
+  const H = canvas.height;
+  const dark = document.documentElement.getAttribute('data-theme') !== 'light';
 
-  const darkMode = !document.documentElement.hasAttribute('data-theme') ||
-                    document.documentElement.getAttribute('data-theme') !== 'light';
+  // Background
+  ctx.fillStyle = dark ? '#0A0C10' : '#E8EBF2';
+  ctx.fillRect(0, 0, W, H);
 
-  const colors = {
-    own:     darkMode ? '#FF5C35' : '#FF4D1F',
-    friend:  darkMode ? '#4D8EFF' : '#3D7FFF',
-    neutral: darkMode ? '#252A3A' : '#D0D4DE',
+  // Subtle grid lines (streets)
+  ctx.strokeStyle = dark ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.04)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i < W; i += 28) {
+    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke();
+  }
+  for (let i = 0; i < H; i += 28) {
+    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(W, i); ctx.stroke();
+  }
+
+  // Colors
+  const C = {
+    own:     dark ? '#FF5C35' : '#FF4D1F',
+    friend:  dark ? '#4D8EFF' : '#3D7FFF',
+    enemy:   dark ? '#FF3B6E' : '#E8003D',
+    neutral: dark ? '#1C2030' : '#D4D8E4',
+    stroke:  dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
   };
-
-  const bgColor = darkMode ? '#0D0F14' : '#E8ECF0';
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   frame++;
 
-  hexes.forEach(function(hex) {
-    const pulse = Math.sin(frame * hex.pulseSpeed + hex.pulseOffset) * 0.15 + 0.15;
-    const a = hex.type === 'neutral' ? 0.15 + pulse * 0.3 : 0.5 + pulse;
-    drawHex(hex.x, hex.y, HEX_SIZE - 2, colors[hex.type], Math.min(a, 1));
+  // Trigger random conquest animation occasionally
+  if (frame - lastConquestFrame > 180 && Math.random() < 0.02) {
+    const neutrals = hexData.filter(h => h.type === 0);
+    if (neutrals.length) {
+      const pick = neutrals[Math.floor(Math.random() * neutrals.length)];
+      pick.type = 1;
+      pick.conquering = true;
+      pick.conquestT  = 0;
+      lastConquestFrame = frame;
+    }
+  }
+
+  hexData.forEach(hex => {
+    const { x, y } = hexPos(hex.c, hex.r);
+    if (x < -HEX_R || x > W + HEX_R || y < -HEX_R || y > H + HEX_R) return;
+
+    const r = HEX_R - HEX_GAP;
+
+    // Conquest burst animation
+    if (hex.conquering) {
+      hex.conquestT += 0.06;
+      if (hex.conquestT >= 1) hex.conquering = false;
+    }
+
+    // Alpha / pulse
+    let alpha = 1;
+    if (hex.type === 0) {
+      alpha = 0.35 + Math.sin(frame * hex.speed + hex.phase) * 0.12;
+    } else if (hex.type === 1) {
+      alpha = 0.72 + Math.sin(frame * 0.025 + hex.pulsePhase) * 0.18;
+    } else if (hex.type === 2) {
+      alpha = 0.55 + Math.sin(frame * hex.speed + hex.phase) * 0.1;
+    } else {
+      alpha = 0.6;
+    }
+
+    // Draw hex fill
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    drawHexPath(x, y, r);
+    ctx.fillStyle = hex.type === 0 ? C.neutral
+                  : hex.type === 1 ? C.own
+                  : hex.type === 2 ? C.friend
+                  : C.enemy;
+    ctx.fill();
+
+    // Stroke
+    ctx.globalAlpha = 0.3;
+    ctx.strokeStyle = C.stroke;
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+    ctx.restore();
+
+    // Conquest burst ring
+    if (hex.conquering && hex.conquestT < 1) {
+      const t = hex.conquestT;
+      const ringR = r + t * 16;
+      ctx.save();
+      ctx.globalAlpha = (1 - t) * 0.7;
+      drawHexPath(x, y, ringR);
+      ctx.strokeStyle = C.own;
+      ctx.lineWidth   = 2;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Crown on own hex clusters (decorative)
+    if (hex.type === 1 && hex.c === 3 && hex.r === 7) {
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.font = `${HEX_R * 0.7}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('👑', x, y);
+      ctx.restore();
+    }
   });
+
+  // Route line (simulated GPS track)
+  ctx.save();
+  ctx.globalAlpha = dark ? 0.5 : 0.4;
+  ctx.strokeStyle = C.own;
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 4]);
+  ctx.lineDashOffset = -(frame * 0.3) % 8;
+  ctx.beginPath();
+  ctx.moveTo(30, 80);
+  ctx.bezierCurveTo(80, 120, 60, 160, 100, 190);
+  ctx.bezierCurveTo(140, 220, 130, 260, 160, 280);
+  ctx.stroke();
+  ctx.restore();
+
+  // GPS dot (runner position)
+  const dotX = 100 + Math.sin(frame * 0.012) * 6;
+  const dotY = 190 + Math.cos(frame * 0.009) * 4;
+  ctx.save();
+  ctx.globalAlpha = 1;
+  // Outer pulse
+  ctx.beginPath();
+  ctx.arc(dotX, dotY, 10 + Math.sin(frame * 0.05) * 3, 0, Math.PI * 2);
+  ctx.fillStyle = dark ? 'rgba(255,92,53,0.2)' : 'rgba(255,77,31,0.15)';
+  ctx.fill();
+  // Inner dot
+  ctx.beginPath();
+  ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
+  ctx.fillStyle = C.own;
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth   = 1.5;
+  ctx.stroke();
+  ctx.restore();
+
+  requestAnimationFrame(drawPhone);
 }
 
-function animate() {
-  drawHexagons();
-  requestAnimationFrame(animate);
-}
-
-// Wait for layout
-setTimeout(function() {
-  canvas.width = canvas.offsetWidth || 280;
-  canvas.height = canvas.offsetHeight || 580;
-  animate();
+// Init
+initHexes();
+setTimeout(() => {
+  canvas.width  = canvas.offsetWidth  || 288;
+  canvas.height = canvas.offsetHeight || 596;
+  drawPhone();
 }, 100);
 
-window.addEventListener('resize', function() {
-  canvas.width = canvas.offsetWidth || 280;
-  canvas.height = canvas.offsetHeight || 580;
+window.addEventListener('resize', () => {
+  canvas.width  = canvas.offsetWidth  || 288;
+  canvas.height = canvas.offsetHeight || 596;
 });
-
 </script>
 </body>
 </html>
