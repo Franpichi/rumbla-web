@@ -1054,7 +1054,7 @@ footer {
 <li><a href="/terms.html" data-i18n="linkTerms">Terms</a></li>
 <li><a href="/cookies.html" data-i18n="linkCookies">Cookies</a></li>
 <li><a href="#" class="cookie-settings-link" data-i18n="linkCookieSettings">Cookie settings</a></li>
-<li><a href="mailto:info@rumbla.app" data-i18n="linkContact">Contact</a></li>
+<li><a href="/contact.html" data-i18n="linkContact">Contact</a></li>
     </ul>
   </div>
 
@@ -1285,8 +1285,9 @@ function toggleTheme() {
   document.getElementById('themeIcon').textContent  = isDark ? '☀️' : '🌙';
   document.getElementById('themeLabel').textContent = isDark ? 'Light' : 'Dark';
   document.querySelectorAll('#logoImg').forEach(el => {
-  el.src = isDark ? 'assets/logo-dark.svg' : 'assets/logo-light.svg';
-});
+    el.src = isDark ? 'assets/logo-dark.svg' : 'assets/logo-light.svg';
+  });
+  localStorage.setItem('rumbla_theme', isDark ? 'dark' : 'light');
 }
 
 // ── MODE ──

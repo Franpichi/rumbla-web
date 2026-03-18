@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Rumbla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-base:     #0D0F14;
+  --bg-surface:  #141720;
+  --bg-elevated: #1C2030;
+  --text-pri:    #F0F2F8;
+  --text-sec:    #8B93A8;
+  --text-dis:    #4A5168;
+  --accent:      #FF5C35;
+  --teal:        #00E5CC;
+  --teal-dim:    rgba(0,229,204,0.1);
+  --border-sub:  #1F2435;
+  --border-str:  #2D3350;
+}
+[data-theme="light"] {
+  --bg-base:     #F2F3F7;
+  --bg-surface:  #FFFFFF;
+  --bg-elevated: #ECEEF4;
+  --text-pri:    #0D0F14;
+  --text-sec:    #4A5168;
+  --text-dis:    #8B93A8;
+  --accent:      #FF4D1F;
+  --teal:        #00CCBA;
+  --teal-dim:    rgba(0,204,186,0.08);
+  --border-sub:  #DDE0EA;
+  --border-str:  #C2C8D8;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-base);
+  color: var(--text-pri);
+  min-height: 100vh;
+  padding: 0 24px 80px;
+  transition: background 0.3s, color 0.3s;
+}
+nav {
+  padding: 28px 0 24px;
+  border-bottom: 1px solid var(--border-sub);
+  margin-bottom: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.logo-wrap { display: flex; align-items: center; text-decoration: none; }
+.logo-img  { height: 28px; width: auto; }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.back-link {
+  font-size: 13px; color: var(--text-dis);
+  text-decoration: none; transition: color 0.2s;
+}
+.back-link:hover { color: var(--accent); }
+.theme-btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-str);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-sec);
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: all 0.2s;
+}
+.theme-btn:hover { border-color: var(--accent); color: var(--text-pri); }
+.container { max-width: 760px; margin: 0 auto; }
+.page-label {
+  font-size: 11px; font-weight: 500;
+  color: var(--accent); text-transform: uppercase;
+  letter-spacing: 1.5px; margin-bottom: 16px;
+}
+h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(40px, 6vw, 64px);
+  line-height: 0.95; color: var(--text-pri); margin-bottom: 16px;
+}
+.page-sub {
+  font-size: 16px; font-weight: 300;
+  color: var(--text-sec); line-height: 1.65;
+  max-width: 520px;
+  margin-bottom: 48px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid var(--border-sub);
+}
+/* Form */
+.contact-form { max-width: 560px; }
+.field { margin-bottom: 20px; }
+label {
+  display: block;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-sec); text-transform: uppercase;
+  letter-spacing: 0.5px; margin-bottom: 8px;
+}
+input[type="text"],
+input[type="email"],
+textarea {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-str);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 300;
+  color: var(--text-pri);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  resize: none;
+}
+input::placeholder, textarea::placeholder { color: var(--text-dis); }
+input:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255,92,53,0.12);
+}
+textarea { min-height: 140px; }
+.btn-submit {
+  height: 52px; padding: 0 32px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.15s;
+  margin-top: 8px;
+}
+.btn-submit:hover  { filter: brightness(1.12); transform: translateY(-1px); }
+.btn-submit:active { transform: translateY(0); }
+.btn-submit:disabled { opacity: 0.6; cursor: default; transform: none; }
+/* Success */
+.success-state {
+  display: none;
+  align-items: flex-start;
+  gap: 16px;
+  background: var(--teal-dim);
+  border: 1px solid rgba(0,229,204,0.2);
+  border-radius: 14px;
+  padding: 24px;
+  max-width: 560px;
+  margin-top: 8px;
+}
+.success-state.show { display: flex; }
+.success-icon {
+  width: 36px; height: 36px; flex-shrink: 0;
+  background: var(--teal); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #0D0F14;
+}
+.success-state p { font-size: 15px; color: var(--text-sec); line-height: 1.6; }
+.success-state strong { color: var(--teal); }
+/* Error */
+.error-msg {
+  display: none;
+  font-size: 13px; color: #FF3B6E;
+  margin-top: 12px;
+}
+.error-msg.show { display: block; }
+/* Footer */
+footer {
+  max-width: 760px; margin: 56px auto 0;
+  padding-top: 24px; border-top: 1px solid var(--border-sub);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { font-size: 13px; color: var(--text-dis); text-decoration: none; }
+.footer-links a:hover { color: var(--text-sec); }
+.footer-copy { font-size: 12px; color: var(--text-dis); }
+</style>
+</head>
+<body>
+ 
+<nav>
+  <a href="/" class="logo-wrap">
+    <img src="assets/logo-dark.svg" alt="Rumbla" class="logo-img" id="logoImg">
+  </a>
+  <div class="nav-right">
+    <a href="/" class="back-link">← Back</a>
+    <button class="theme-btn" onclick="toggleTheme()">
+      <span id="themeIcon">☀️</span>
+      <span id="themeLabel">Light</span>
+    </button>
+  </div>
+</nav>
+ 
+<div class="container">
+  <div class="page-label">Contact</div>
+  <h1>Say hello.</h1>
+  <p class="page-sub">Have a question, a suggestion, or want to get involved in the Copenhagen beta? Send us a message and we'll get back to you.</p>
+ 
+  <form class="contact-form" id="contactForm" onsubmit="handleContact(event)">
+    <div class="field">
+      <label for="nameInput" id="labelName">Name</label>
+      <input type="text" id="nameInput" placeholder="Your name" required>
+    </div>
+    <div class="field">
+      <label for="emailInput" id="labelEmail">Email</label>
+      <input type="email" id="emailInput" placeholder="your@email.com" required>
+    </div>
+    <div class="field">
+      <label for="messageInput" id="labelMessage">Message</label>
+      <textarea id="messageInput" placeholder="What's on your mind?" required></textarea>
+    </div>
+    <button type="submit" class="btn-submit" id="submitBtn">Send message</button>
+    <p class="error-msg" id="errorMsg">Something went wrong. Please try again or email us directly at info@rumbla.app</p>
+  </form>
+ 
+  <div class="success-state" id="successState">
+    <div class="success-icon">✓</div>
+    <div>
+      <p><strong id="successTitle">Message sent.</strong></p>
+      <p id="successSub">We'll get back to you as soon as possible. Check your inbox for a confirmation.</p>
+    </div>
+  </div>
+</div>
+ 
+<footer>
+  <div class="footer-links">
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
+    <a href="/cookies.html">Cookies</a>
+    <a href="/contact.html">Contact</a>
+  </div>
+  <span class="footer-copy">© 2026 Rumbla · Copenhagen</span>
+</footer>
+ 
+<script>
+// ── THEME SYNC ──
+// Read theme from localStorage (set by main index.html)
+var savedTheme = localStorage.getItem('rumbla_theme');
+var isDark = savedTheme !== 'light';
+ 
+function applyTheme(dark) {
+  isDark = dark;
+  document.documentElement.setAttribute('data-theme', dark ? '' : 'light');
+  document.getElementById('themeIcon').textContent  = dark ? '☀️' : '🌙';
+  document.getElementById('themeLabel').textContent = dark ? 'Light' : 'Dark';
+  document.getElementById('logoImg').src = dark ? 'assets/logo-dark.svg' : 'assets/logo-light.svg';
+  localStorage.setItem('rumbla_theme', dark ? 'dark' : 'light');
+}
+ 
+function toggleTheme() { applyTheme(!isDark); }
+ 
+// Apply on load
+applyTheme(isDark);
+ 
+// ── I18N ──
+var STRINGS = {
+  en: {
+    label: 'Contact', title: 'Say hello.',
+    sub: 'Have a question, a suggestion, or want to get involved in the Copenhagen beta? Send us a message and we\'ll get back to you.',
+    labelName: 'Name', labelEmail: 'Email', labelMessage: 'Message',
+    namePlaceholder: 'Your name', emailPlaceholder: 'your@email.com', messagePlaceholder: "What's on your mind?",
+    submitBtn: 'Send message',
+    successTitle: 'Message sent.', successSub: "We'll get back to you as soon as possible. Check your inbox for a confirmation.",
+    errorMsg: 'Something went wrong. Please try again or email us directly at info@rumbla.app',
+  },
+  es: {
+    label: 'Contacto', title: 'Hola.',
+    sub: '¿Tienes una pregunta, una sugerencia o quieres participar en la beta de Copenhague? Escríbenos.',
+    labelName: 'Nombre', labelEmail: 'Email', labelMessage: 'Mensaje',
+    namePlaceholder: 'Tu nombre', emailPlaceholder: 'tu@email.com', messagePlaceholder: '¿En qué podemos ayudarte?',
+    submitBtn: 'Enviar mensaje',
+    successTitle: 'Mensaje enviado.', successSub: 'Te responderemos lo antes posible. Revisa tu bandeja de entrada.',
+    errorMsg: 'Algo salió mal. Vuelve a intentarlo o escríbenos directamente a info@rumbla.app',
+  },
+  da: {
+    label: 'Kontakt', title: 'Sig hej.',
+    sub: 'Har du et spørgsmål, et forslag eller vil du med i Copenhagen-betaen? Send os en besked.',
+    labelName: 'Navn', labelEmail: 'Email', labelMessage: 'Besked',
+    namePlaceholder: 'Dit navn', emailPlaceholder: 'din@email.dk', messagePlaceholder: 'Hvad har du på hjerte?',
+    submitBtn: 'Send besked',
+    successTitle: 'Besked sendt.', successSub: 'Vi vender tilbage hurtigst muligt. Tjek din indbakke.',
+    errorMsg: 'Noget gik galt. Prøv igen eller skriv direkte til info@rumbla.app',
+  }
+};
+ 
+var currentLang = localStorage.getItem('rumbla_lang') || 'en';
+ 
+function applyLang(lang) {
+  currentLang = lang;
+  var s = STRINGS[lang] || STRINGS['en'];
+  document.querySelector('.page-label').textContent = s.label;
+  document.querySelector('h1').textContent = s.title;
+  document.querySelector('.page-sub').textContent = s.sub;
+  document.getElementById('labelName').textContent = s.labelName;
+  document.getElementById('labelEmail').textContent = s.labelEmail;
+  document.getElementById('labelMessage').textContent = s.labelMessage;
+  document.getElementById('nameInput').placeholder = s.namePlaceholder;
+  document.getElementById('emailInput').placeholder = s.emailPlaceholder;
+  document.getElementById('messageInput').placeholder = s.messagePlaceholder;
+  document.getElementById('submitBtn').textContent = s.submitBtn;
+  document.getElementById('successTitle').textContent = s.successTitle;
+  document.getElementById('successSub').textContent = s.successSub;
+  document.getElementById('errorMsg').textContent = s.errorMsg;
+  localStorage.setItem('rumbla_lang', lang);
+}
+ 
+applyLang(currentLang);
+ 
+// ── CONTACT FORM ──
+var CONTACT_URL = 'https://rocqjhbixkxzpyczvccl.supabase.co/functions/v1/rumbla-contact';
+ 
+async function handleContact(e) {
+  e.preventDefault();
+  var name    = document.getElementById('nameInput').value.trim();
+  var email   = document.getElementById('emailInput').value.trim();
+  var message = document.getElementById('messageInput').value.trim();
+  var btn     = document.getElementById('submitBtn');
+  var errMsg  = document.getElementById('errorMsg');
+ 
+  btn.disabled = true;
+  btn.textContent = '...';
+  errMsg.classList.remove('show');
+ 
+  try {
+    var res = await fetch(CONTACT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvY3FqaGJpeGt4enB5Y3p2Y2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MTMzNDksImV4cCI6MjA4OTE4OTM0OX0.wmJdoZDYc2eItEzrUUiMdPi2mQpoocGj1RJU9OOO9Qc',
+      },
+      body: JSON.stringify({ name: name, email: email, message: message, lang: currentLang }),
+    });
+    if (!res.ok) throw new Error('Server error');
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('successState').classList.add('show');
+  } catch(err) {
+    btn.disabled = false;
+    var s = STRINGS[currentLang] || STRINGS['en'];
+    btn.textContent = s.submitBtn;
+    errMsg.classList.add('show');
+  }
+}
+</script>
+</body>
+</html>

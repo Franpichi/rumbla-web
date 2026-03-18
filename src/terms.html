@@ -8,219 +8,129 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg-base:     #0D0F14;
-  --bg-surface:  #141720;
-  --bg-elevated: #1C2030;
-  --text-pri:    #F0F2F8;
-  --text-sec:    #8B93A8;
-  --text-dis:    #4A5168;
-  --accent:      #FF5C35;
-  --border-sub:  #1F2435;
-  --border-str:  #2D3350;
+  --bg-base:#0D0F14;--bg-surface:#141720;--bg-elevated:#1C2030;
+  --text-pri:#F0F2F8;--text-sec:#8B93A8;--text-dis:#4A5168;
+  --accent:#FF5C35;--border-sub:#1F2435;--border-str:#2D3350;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg-base);
-  color: var(--text-pri);
-  min-height: 100vh;
-  padding: 0 24px 80px;
+[data-theme="light"] {
+  --bg-base:#F2F3F7;--bg-surface:#FFFFFF;--bg-elevated:#ECEEF4;
+  --text-pri:#0D0F14;--text-sec:#4A5168;--text-dis:#8B93A8;
+  --accent:#FF4D1F;--border-sub:#DDE0EA;--border-str:#C2C8D8;
 }
-nav {
-  padding: 28px 0 24px;
-  border-bottom: 1px solid var(--border-sub);
-  margin-bottom: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 760px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.logo {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: 26px;
-  color: var(--text-pri);
-  text-decoration: none;
-  letter-spacing: -0.5px;
-}
-.logo span { color: var(--accent); }
-.back-link {
-  font-size: 13px;
-  color: var(--text-dis);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.back-link:hover { color: var(--accent); }
-.container { max-width: 760px; margin: 0 auto; }
-.page-label {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 16px;
-}
-h1 {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: clamp(40px, 6vw, 64px);
-  line-height: 0.95;
-  color: var(--text-pri);
-  margin-bottom: 16px;
-}
-.meta {
-  font-size: 13px;
-  color: var(--text-dis);
-  margin-bottom: 52px;
-  padding-bottom: 36px;
-  border-bottom: 1px solid var(--border-sub);
-}
-h2 {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700;
-  font-size: 24px;
-  color: var(--text-pri);
-  margin-top: 44px;
-  margin-bottom: 14px;
-}
-p {
-  font-size: 15px;
-  font-weight: 300;
-  color: var(--text-sec);
-  line-height: 1.75;
-  margin-bottom: 16px;
-}
-ul {
-  padding-left: 20px;
-  margin-bottom: 16px;
-}
-li {
-  font-size: 15px;
-  font-weight: 300;
-  color: var(--text-sec);
-  line-height: 1.75;
-  margin-bottom: 6px;
-}
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
-strong { color: var(--text-pri); font-weight: 500; }
-footer {
-  max-width: 760px;
-  margin: 56px auto 0;
-  padding-top: 24px;
-  border-top: 1px solid var(--border-sub);
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.footer-links { display: flex; gap: 20px; }
-.footer-links a { font-size: 13px; color: var(--text-dis); text-decoration: none; }
-.footer-links a:hover { color: var(--text-sec); }
-.footer-copy { font-size: 12px; color: var(--text-dis); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg-base);color:var(--text-pri);min-height:100vh;padding:0 24px 80px;transition:background 0.3s,color 0.3s;}
+nav{padding:28px 0 24px;border-bottom:1px solid var(--border-sub);margin-bottom:56px;display:flex;align-items:center;justify-content:space-between;max-width:760px;margin-left:auto;margin-right:auto;}
+.logo-wrap{display:flex;align-items:center;text-decoration:none;}
+.logo-img{height:28px;width:auto;}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.back-link{font-size:13px;color:var(--text-dis);text-decoration:none;transition:color 0.2s;}
+.back-link:hover{color:var(--accent);}
+.theme-btn{background:var(--bg-elevated);border:1px solid var(--border-str);border-radius:999px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--text-sec);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.2s;}
+.theme-btn:hover{border-color:var(--accent);color:var(--text-pri);}
+.container{max-width:760px;margin:0 auto;}
+.page-label{font-size:11px;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(40px,6vw,64px);line-height:0.95;color:var(--text-pri);margin-bottom:16px;}
+.meta{font-size:13px;color:var(--text-dis);margin-bottom:52px;padding-bottom:36px;border-bottom:1px solid var(--border-sub);}
+h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;color:var(--text-pri);margin-top:44px;margin-bottom:14px;}
+p{font-size:15px;font-weight:300;color:var(--text-sec);line-height:1.75;margin-bottom:16px;}
+ul{padding-left:20px;margin-bottom:16px;}
+li{font-size:15px;font-weight:300;color:var(--text-sec);line-height:1.75;margin-bottom:6px;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{text-decoration:underline;}
+strong{color:var(--text-pri);font-weight:500;}
+footer{max-width:760px;margin:56px auto 0;padding-top:24px;border-top:1px solid var(--border-sub);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.footer-links{display:flex;gap:20px;}
+.footer-links a{font-size:13px;color:var(--text-dis);text-decoration:none;}
+.footer-links a:hover{color:var(--text-sec);}
+.footer-copy{font-size:12px;color:var(--text-dis);}
 </style>
 </head>
 <body>
- 
 <nav>
-  <a href="/" class="logo">rumbla<span>.</span></a>
-  <a href="/" class="back-link">← Back to rumbla.app</a>
+  <a href="/" class="logo-wrap">
+    <img src="assets/logo-dark.svg" alt="Rumbla" class="logo-img" id="logoImg">
+  </a>
+  <div class="nav-right">
+    <a href="/" class="back-link">← Back</a>
+    <button class="theme-btn" onclick="toggleTheme()">
+      <span id="themeIcon">☀️</span><span id="themeLabel">Light</span>
+    </button>
+  </div>
 </nav>
- 
 <div class="container">
- 
   <div class="page-label">Legal</div>
   <h1>Terms of Service</h1>
-  <p class="meta">Effective date: March 18, 2026 &nbsp;·&nbsp; Last updated: March 18, 2026</p>
- 
-  <p>These Terms of Service ("Terms") govern your access to and use of the Rumbla mobile application and website at rumbla.app, operated by Francisco Pizzuto, Copenhagen, Denmark ("Rumbla", "we", "us").</p>
-  <p>By creating an account or using Rumbla, you agree to these Terms. If you do not agree, do not use Rumbla.</p>
- 
+  <p class="meta">Effective date: March 18, 2026 · Last updated: March 18, 2026</p>
+  <p>These Terms of Service ("Terms") govern your use of the Rumbla mobile application and website at rumbla.app, operated by Francisco Pizzuto, Copenhagen, Denmark.</p>
+  <p>By creating an account or using Rumbla, you agree to these Terms.</p>
   <h2>1. The Service</h2>
-  <p>Rumbla is a mobile application that gamifies running by allowing users to conquer and steal virtual territorial zones (represented as H3 hexagons) by physically running through them. The app includes a social feed, friend system, leaderboards, and run tracking.</p>
- 
+  <p>Rumbla is a mobile application that gamifies running by allowing users to conquer and steal virtual territorial zones (H3 hexagons) by physically running through them. The app includes a social feed, friend system, leaderboards, and run tracking.</p>
   <h2>2. Eligibility</h2>
-  <p>You must be at least 13 years old to use Rumbla. By using the app, you represent that you meet this requirement. If you are under 18, you represent that your parent or guardian has reviewed and agreed to these Terms.</p>
- 
+  <p>You must be at least 13 years old to use Rumbla. If you are under 18, your parent or guardian must have reviewed and agreed to these Terms.</p>
   <h2>3. Your Account</h2>
-  <p><strong>3.1</strong> You are responsible for maintaining the confidentiality of your account credentials and for all activity that occurs under your account.</p>
-  <p><strong>3.2</strong> You must provide accurate information when creating your account. Do not impersonate others or create accounts on behalf of others.</p>
-  <p><strong>3.3</strong> You may only create one account per person. Multiple accounts created to gain competitive advantage may be suspended.</p>
- 
+  <p><strong>3.1</strong> You are responsible for maintaining the confidentiality of your account credentials and all activity under your account.</p>
+  <p><strong>3.2</strong> Provide accurate information. Do not impersonate others.</p>
+  <p><strong>3.3</strong> You may only create one account. Multiple accounts for competitive advantage may be suspended.</p>
   <h2>4. Acceptable Use</h2>
   <p>You agree not to:</p>
   <ul>
-    <li>Use GPS spoofing, location simulation, bots, scripts, or any automated means to conquer hexagons without physically running.</li>
-    <li>Exploit bugs or vulnerabilities for competitive advantage. Report them to <a href="mailto:info@rumbla.app">info@rumbla.app</a> instead.</li>
-    <li>Harass, threaten, or abuse other users through the social feed or any in-app communication.</li>
-    <li>Post content that is illegal, defamatory, discriminatory, obscene, or violates any third party's rights.</li>
-    <li>Attempt to reverse-engineer, decompile, or extract the source code of the app.</li>
-    <li>Use the service for any commercial purpose without our written consent.</li>
-    <li>Interfere with the integrity or availability of the service.</li>
+    <li>Use GPS spoofing, bots, scripts, or automation to conquer hexagons without physically running.</li>
+    <li>Exploit bugs for competitive advantage. Report them to <a href="mailto:info@rumbla.app">info@rumbla.app</a>.</li>
+    <li>Harass, threaten, or abuse other users.</li>
+    <li>Post illegal, defamatory, or discriminatory content.</li>
+    <li>Attempt to reverse-engineer or extract the source code of the app.</li>
+    <li>Use the service for commercial purposes without our written consent.</li>
   </ul>
-  <p>Violations may result in temporary suspension or permanent account termination.</p>
- 
   <h2>5. Gameplay Rules</h2>
-  <p><strong>5.1 Territory conquest</strong> is earned by physically running over hexagonal cells as tracked by your device's GPS. Rumbla does not guarantee GPS accuracy — minor inaccuracies are inherent to GPS technology.</p>
-  <p><strong>5.2 Zone theft</strong> is a core mechanic of the game. When another user runs over a hexagon you own, they acquire it. This is intentional game design, not an error. You will be notified when this occurs.</p>
-  <p><strong>5.3 Rankings</strong> reset weekly (all-time rankings are cumulative). Rankings are based on total hexagons conquered within the relevant period.</p>
-  <p><strong>5.4 Anti-cheat:</strong> We reserve the right to investigate and reverse territory gains we believe were obtained through illegitimate means (spoofing, automation, exploits). Repeated violations result in account termination.</p>
- 
+  <p><strong>5.1</strong> Territory conquest requires physically running. Rumbla does not guarantee GPS accuracy — minor inaccuracies are inherent.</p>
+  <p><strong>5.2</strong> Zone theft is a core mechanic. When another user runs over your hexagon, they acquire it. This is intentional.</p>
+  <p><strong>5.3</strong> Rankings reset weekly. All-time rankings are cumulative.</p>
+  <p><strong>5.4</strong> We may reverse territory gains obtained through illegitimate means. Repeated violations result in termination.</p>
   <h2>6. User Content</h2>
-  <p><strong>6.1</strong> You retain ownership of content you post (run summaries, comments, profile photos). By posting, you grant Rumbla a non-exclusive, worldwide, royalty-free license to display and distribute that content within the service.</p>
-  <p><strong>6.2</strong> You are solely responsible for your content. Do not post content that violates applicable laws or these Terms.</p>
-  <p><strong>6.3</strong> We may remove content that violates these Terms without notice.</p>
- 
-  <h2>7. Moderation and Reporting</h2>
-  <p>Rumbla provides in-app tools to block and report other users. Reports are reviewed manually by the Rumbla team. We reserve the right to act on reports at our sole discretion, including removing content or suspending accounts. We are not obligated to notify you of actions taken on your report.</p>
- 
+  <p><strong>6.1</strong> You retain ownership of content you post. By posting, you grant Rumbla a non-exclusive, worldwide, royalty-free license to display it within the service.</p>
+  <p><strong>6.2</strong> You are responsible for your content. We may remove content that violates these Terms without notice.</p>
+  <h2>7. Moderation</h2>
+  <p>We provide in-app tools to block and report users. Reports are reviewed manually. We act at our sole discretion.</p>
   <h2>8. Intellectual Property</h2>
-  <p>All content, design, trademarks, and software that make up Rumbla (excluding user-generated content) are owned by Francisco Pizzuto or licensed to us. You may not copy, reproduce, or use them without written permission.</p>
- 
-  <h2>9. Premium Features and Payments</h2>
-  <p>Rumbla is free to use. We may introduce optional premium features ("Rumbla Premium") at a future date, priced at $4.99/month or $34.99/year. If and when premium is activated:</p>
-  <ul>
-    <li>Payments are processed by the Apple App Store. Apple's terms govern all transactions.</li>
-    <li>Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period.</li>
-    <li>Refunds are subject to Apple's refund policy.</li>
-    <li>Early users who joined during the beta period may be eligible for a permanent Founder Badge and associated perks.</li>
-  </ul>
- 
+  <p>All content, design, and software that make up Rumbla are owned by Francisco Pizzuto. You may not copy or reproduce them without permission.</p>
+  <h2>9. Premium Features</h2>
+  <p>Rumbla is free to use. Optional premium features may be introduced at $4.99/month or $34.99/year. Payments are processed by Apple. Subscriptions auto-renew unless cancelled 24 hours before renewal. Beta users may be eligible for a permanent Founder Badge.</p>
   <h2>10. Disclaimer of Warranties</h2>
-  <p>Rumbla is provided "as is" and "as available" without warranties of any kind. We do not guarantee that the service will be uninterrupted, error-free, or that your territory will be preserved in the event of technical failure.</p>
-  <p><strong>Physical activity warning:</strong> Running outdoors involves inherent physical risk. Rumbla is not responsible for injuries, accidents, or incidents that occur while using the app. Always run safely, obey traffic laws, and be aware of your surroundings. Do not use the app in a way that distracts you from physical hazards.</p>
- 
+  <p>Rumbla is provided "as is". We do not guarantee uninterrupted service.</p>
+  <p><strong>Physical activity warning:</strong> Running outdoors involves inherent risk. Rumbla is not responsible for injuries or accidents. Always run safely and obey traffic laws.</p>
   <h2>11. Limitation of Liability</h2>
-  <p>To the maximum extent permitted by applicable law, Rumbla shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the service.</p>
- 
+  <p>To the maximum extent permitted by law, Rumbla shall not be liable for indirect, incidental, or consequential damages.</p>
   <h2>12. Governing Law</h2>
-  <p>These Terms are governed by the laws of Denmark. Any disputes will be subject to the exclusive jurisdiction of the courts of Copenhagen, Denmark.</p>
- 
+  <p>These Terms are governed by Danish law. Disputes are subject to the courts of Copenhagen, Denmark.</p>
   <h2>13. Termination</h2>
-  <p>You may delete your account at any time from Settings → Delete Account. We may suspend or terminate your account if you violate these Terms, with or without notice depending on the severity of the violation.</p>
- 
-  <h2>14. Changes to These Terms</h2>
-  <p>We may update these Terms. If we make material changes, we will notify you by email or in-app notice at least 14 days in advance. Continued use of Rumbla after changes take effect constitutes acceptance.</p>
- 
+  <p>Delete your account anytime from Settings → Delete Account. We may suspend accounts for Terms violations.</p>
+  <h2>14. Changes</h2>
+  <p>We will notify you of material changes at least 14 days in advance.</p>
   <h2>15. Contact</h2>
-  <p><strong>Rumbla / Francisco Pizzuto</strong><br>
-  Copenhagen, Denmark<br>
-  <a href="mailto:info@rumbla.app">info@rumbla.app</a><br>
-  <a href="https://rumbla.app">rumbla.app</a></p>
- 
+  <p><strong>Rumbla / Francisco Pizzuto</strong> · Copenhagen, Denmark<br>
+  <a href="mailto:info@rumbla.app">info@rumbla.app</a> · <a href="https://rumbla.app">rumbla.app</a></p>
 </div>
- 
 <footer>
   <div class="footer-links">
     <a href="/privacy.html">Privacy</a>
     <a href="/terms.html">Terms</a>
     <a href="/cookies.html">Cookies</a>
-    <a href="mailto:info@rumbla.app">Contact</a>
+    <a href="/contact.html">Contact</a>
   </div>
   <span class="footer-copy">© 2026 Rumbla · Copenhagen</span>
 </footer>
- 
+<script>
+var isDark = localStorage.getItem('rumbla_theme') !== 'light';
+function applyTheme(dark) {
+  isDark = dark;
+  document.documentElement.setAttribute('data-theme', dark ? '' : 'light');
+  document.getElementById('themeIcon').textContent  = dark ? '☀️' : '🌙';
+  document.getElementById('themeLabel').textContent = dark ? 'Light' : 'Dark';
+  document.getElementById('logoImg').src = dark ? 'assets/logo-dark.svg' : 'assets/logo-light.svg';
+  localStorage.setItem('rumbla_theme', dark ? 'dark' : 'light');
+}
+function toggleTheme() { applyTheme(!isDark); }
+applyTheme(isDark);
+</script>
 </body>
 </html>
