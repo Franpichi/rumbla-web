@@ -749,9 +749,59 @@ footer {
   .bottom-cta { padding: 60px 24px 80px; }
   .bottom-waitlist { flex-direction: column; }
   .waitlist-form { flex-direction: column; }
-  footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; gap: 20px; }
+ footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; gap: 20px; }
   .stats-row { gap: 24px; }
 }
+
+/* ── COOKIE BANNER ── */
+#rumbla-cookie-banner {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 9999;
+  background: #1C2030;
+  border-top: 1px solid #2A3050;
+  padding: 20px 24px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  font-size: 14px;
+  color: #C8CDD8;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.4);
+}
+[data-theme="light"] #rumbla-cookie-banner {
+  background: #FFFFFF;
+  border-top: 1px solid #DDE0EA;
+  color: #4A5168;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.08);
+}
+#rumbla-cookie-banner.visible { transform: translateY(0); }
+#rumbla-cookie-banner .cookie-text { flex: 1; line-height: 1.55; }
+#rumbla-cookie-banner .cookie-text a { color: #FF5C35; text-decoration: none; }
+#rumbla-cookie-banner .cookie-text a:hover { text-decoration: underline; }
+#rumbla-cookie-banner .cookie-actions { display: flex; gap: 10px; flex-shrink: 0; }
+#rumbla-cookie-banner .cookie-btn {
+  padding: 10px 20px; border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none;
+  transition: opacity 0.15s; white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+#rumbla-cookie-banner .cookie-btn:hover { opacity: 0.85; }
+#rumbla-cookie-banner .cookie-btn-accept { background: #FF5C35; color: #fff; }
+#rumbla-cookie-banner .cookie-btn-decline { background: transparent; color: #8B93A8; border: 1px solid #2A3050; }
+[data-theme="light"] #rumbla-cookie-banner .cookie-btn-decline { border-color: #C2C8D8; color: #4A5168; }
+.cookie-settings-link { cursor: pointer; color: var(--text-dis); font-size: 13px; text-decoration: none; transition: color 0.2s; }
+.cookie-settings-link:hover { color: var(--accent); }
+@media (max-width: 640px) {
+  #rumbla-cookie-banner { flex-direction: column; align-items: flex-start; gap: 16px; }
+  #rumbla-cookie-banner .cookie-actions { width: 100%; }
+  #rumbla-cookie-banner .cookie-btn { flex: 1; text-align: center; }
+}
+
 </style>
 </head>
 <body>
@@ -1000,9 +1050,11 @@ footer {
       <span class="logo-dot"></span>
     </a>
     <ul class="footer-links">
-      <li><a href="#" data-i18n="linkPrivacy">Privacy</a></li>
-      <li><a href="#" data-i18n="linkTerms">Terms</a></li>
-      <li><a href="#" data-i18n="linkContact">Contact</a></li>
+<li><a href="/privacy.html" data-i18n="linkPrivacy">Privacy</a></li>
+<li><a href="/terms.html" data-i18n="linkTerms">Terms</a></li>
+<li><a href="/cookies.html" data-i18n="linkCookies">Cookies</a></li>
+<li><a href="#" class="cookie-settings-link" data-i18n="linkCookieSettings">Cookie settings</a></li>
+<li><a href="mailto:info@rumbla.app" data-i18n="linkContact">Contact</a></li>
     </ul>
   </div>
 
@@ -1034,9 +1086,19 @@ footer {
     </a> -->
   </div>
 
-  <span class="footer-copy">© 2025 Rumbla · Copenhagen</span>
+  <span class="footer-copy">© 2026 Rumbla · Copenhagen</span>
 </footer>
-
+<!-- COOKIE BANNER -->
+<div id="rumbla-cookie-banner" role="dialog" aria-live="polite" aria-label="Cookie consent">
+  <p class="cookie-text" id="cookieBannerText">
+    We use essential cookies to make this site work. No tracking or advertising cookies.
+    <a href="/privacy.html">Privacy Policy</a> · <a href="/cookies.html">Cookie Policy</a>
+  </p>
+  <div class="cookie-actions">
+    <button class="cookie-btn cookie-btn-decline" id="cookie-decline">Decline</button>
+    <button class="cookie-btn cookie-btn-accept" id="cookie-accept">Accept</button>
+  </div>
+</div>
 <script>
 // ─────────────────────────────────
 // MODE: 'waitlist' | 'launch'
@@ -1079,6 +1141,11 @@ const STRINGS = {
     ctaLine: 'is', ctaWaiting: 'waiting.',
     ctaSub: 'Be among the first runners to claim your territory.',
     linkPrivacy: 'Privacy', linkTerms: 'Terms', linkContact: 'Contact',
+    linkCookies: 'Cookies',
+    linkCookieSettings: 'Cookie settings',
+    cookieBannerText: 'We use essential cookies to make this site work. No tracking or advertising cookies.',
+    cookieDecline: 'Decline', cookieAccept: 'Accept',
+    cookiePrivacyLabel: 'Privacy Policy', cookiePolicyLabel: 'Cookie Policy',
   },
   es: {
     eyebrow:      'Copenhague · Apúntate ahora',
@@ -1114,6 +1181,11 @@ const STRINGS = {
     ctaLine: 'está', ctaWaiting: 'esperando.',
     ctaSub: 'Sé de los primeros runners en reclamar tu territorio.',
     linkPrivacy: 'Privacidad', linkTerms: 'Términos', linkContact: 'Contacto',
+    linkCookies: 'Cookies',
+    linkCookieSettings: 'Configurar cookies',
+    cookieBannerText: 'Usamos cookies esenciales para que el sitio funcione. Sin cookies de seguimiento ni publicidad.',
+    cookieDecline: 'Rechazar', cookieAccept: 'Aceptar',
+    cookiePrivacyLabel: 'Política de privacidad', cookiePolicyLabel: 'Política de cookies',
   },
   da: {
     eyebrow:      'København · Tilmeld dig nu',
@@ -1149,6 +1221,11 @@ const STRINGS = {
     ctaLine: 'venter', ctaWaiting: 'på dig.',
     ctaSub: 'Vær blandt de første løbere til at erobre dit territorium.',
     linkPrivacy: 'Privatliv', linkTerms: 'Vilkår', linkContact: 'Kontakt',
+    linkCookies: 'Cookies',
+    linkCookieSettings: 'Cookie-indstillinger',
+    cookieBannerText: 'Vi bruger nødvendige cookies for at få siden til at fungere. Ingen sporings- eller reklamecookies.',
+    cookieDecline: 'Afvis', cookieAccept: 'Accepter',
+    cookiePrivacyLabel: 'Privatlivspolitik', cookiePolicyLabel: 'Cookiepolitik',
   }
 };
 
@@ -1184,6 +1261,14 @@ function applyLang(lang) {
   document.getElementById('langBtn').innerHTML =
     `<span class="flag">${next.flag}</span><span>${next.label}</span>`;
   document.documentElement.lang = lang;
+  var bannerText = document.getElementById('cookieBannerText');
+  if (bannerText) {
+    bannerText.innerHTML = s.cookieBannerText + ' <a href="/privacy.html">' + s.cookiePrivacyLabel + '</a> · <a href="/cookies.html">' + s.cookiePolicyLabel + '</a>';
+  }
+  var btnDecline = document.getElementById('cookie-decline');
+  var btnAccept  = document.getElementById('cookie-accept');
+  if (btnDecline) btnDecline.textContent = s.cookieDecline;
+  if (btnAccept)  btnAccept.textContent  = s.cookieAccept;
 }
 
 function toggleLang() {
@@ -1506,6 +1591,56 @@ window.addEventListener('resize', () => {
   canvas.width  = canvas.offsetWidth  || 288;
   canvas.height = canvas.offsetHeight || 596;
 });
+(function() {
+  var CONSENT_KEY = 'rumbla_cookie_consent';
+  var CONSENT_DAYS = 365;
+  function setCookie(name, value, days) {
+    var expires = new Date();
+    expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = name + '=' + value + ';expires=' + expires.toUTCString() + ';path=/;SameSite=Lax';
+  }
+  function getCookie(name) {
+    var nameEq = name + '=';
+    var parts = document.cookie.split(';');
+    for (var i = 0; i < parts.length; i++) {
+      var part = parts[i].trim();
+      if (part.indexOf(nameEq) === 0) return part.substring(nameEq.length);
+    }
+    return null;
+  }
+  function hideBanner() {
+    var b = document.getElementById('rumbla-cookie-banner');
+    if (!b) return;
+    b.classList.remove('visible');
+    setTimeout(function() { b.style.display = 'none'; }, 380);
+  }
+  function showBanner() {
+    var b = document.getElementById('rumbla-cookie-banner');
+    if (!b) return;
+    b.style.display = 'flex';
+    setTimeout(function() { b.classList.add('visible'); }, 50);
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    if (getCookie(CONSENT_KEY) !== 'accepted' && getCookie(CONSENT_KEY) !== 'declined') {
+      showBanner();
+    }
+    document.getElementById('cookie-accept').addEventListener('click', function() {
+      setCookie(CONSENT_KEY, 'accepted', CONSENT_DAYS);
+      hideBanner();
+    });
+    document.getElementById('cookie-decline').addEventListener('click', function() {
+      setCookie(CONSENT_KEY, 'declined', CONSENT_DAYS);
+      hideBanner();
+    });
+    document.querySelectorAll('.cookie-settings-link').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.cookie = CONSENT_KEY + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
+        showBanner();
+      });
+    });
+  });
+})();
 </script>
 </body>
 </html>
