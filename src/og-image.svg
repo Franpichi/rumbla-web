@@ -1,0 +1,51 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0D0F14"/>
+
+  <!-- Faint hex grid -->
+  <g opacity="0.07" stroke="#4D8EFF" stroke-width="1.5" fill="none">
+    <polygon points="100,30 131,48 131,84 100,102 69,84 69,48"/>
+    <polygon points="1100,60 1131,78 1131,114 1100,132 1069,114 1069,78"/>
+    <polygon points="60,500 91,518 91,554 60,572 29,554 29,518"/>
+    <polygon points="1140,490 1171,508 1171,544 1140,562 1109,544 1109,508"/>
+    <polygon points="200,520 231,538 231,574 200,592 169,574 169,538"/>
+    <polygon points="980,40 1011,58 1011,94 980,112 949,94 949,58"/>
+    <polygon points="310,80 341,98 341,134 310,152 279,134 279,98"/>
+    <polygon points="860,550 891,568 891,604 860,622 829,604 829,568"/>
+  </g>
+
+  <!-- Subtle radial glow behind hex -->
+  <radialGradient id="glow" cx="50%" cy="38%" r="30%">
+    <stop offset="0%" stop-color="#FF5C35" stop-opacity="0.18"/>
+    <stop offset="100%" stop-color="#FF5C35" stop-opacity="0"/>
+  </radialGradient>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Main hexagon -->
+  <polygon points="600,95 670,136 670,218 600,259 530,218 530,136" fill="#FF5C35"/>
+  <!-- Inner hex highlight -->
+  <polygon points="600,107 663,144 663,207 600,244 537,207 537,144" fill="#FF6E48"/>
+
+  <!-- R letterform inside hex -->
+  <text x="600" y="210" font-family="Barlow Condensed, Arial Black, sans-serif" font-weight="900" font-size="110" fill="#F0F2F8" text-anchor="middle" dominant-baseline="auto">R</text>
+
+  <!-- Wordmark: rumbla -->
+  <text x="600" y="345" font-family="Barlow Condensed, Arial Black, sans-serif" font-weight="900" font-size="78" fill="#F0F2F8" text-anchor="middle" letter-spacing="-1">rumbla</text>
+
+  <!-- Orange accent line under wordmark -->
+  <line x1="420" y1="368" x2="780" y2="368" stroke="#FF5C35" stroke-width="2.5"/>
+
+  <!-- Tagline -->
+  <text x="600" y="430" font-family="DM Sans, Helvetica, Arial, sans-serif" font-weight="300" font-size="24" fill="#8B93A8" text-anchor="middle" letter-spacing="4">CONQUER EVERY STREET</text>
+
+  <!-- Three orange dots -->
+  <circle cx="560" cy="490" r="5" fill="#FF5C35"/>
+  <circle cx="600" cy="490" r="5" fill="#FF5C35" opacity="0.6"/>
+  <circle cx="640" cy="490" r="5" fill="#FF5C35" opacity="0.3"/>
+
+  <!-- Bottom tagline -->
+  <text x="600" y="560" font-family="DM Sans, Helvetica, Arial, sans-serif" font-weight="400" font-size="18" fill="#4A5168" text-anchor="middle" letter-spacing="2">Run · Conquer · Steal</text>
+
+  <!-- URL hint -->
+  <text x="600" y="600" font-family="DM Sans, Helvetica, Arial, sans-serif" font-weight="300" font-size="15" fill="#2D3350" text-anchor="middle" letter-spacing="1">rumbla.app</text>
+</svg>
